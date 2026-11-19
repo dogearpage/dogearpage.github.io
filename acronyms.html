@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="./acronym-favicon.png" type="image/png">
+    <title>Acronym Tracker</title>
+    <!-- Phosphor icons, same pinned version as newmarks.html -->
+    <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+    <!-- Web fonts for the Heading/Body font settings (see FONTS). If offline, text falls back to the next font in each stack. -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bitter:wght@400;700&family=Bungee&family=Cinzel:wght@700&family=Creepster&family=Dancing+Script:wght@700&family=Fira+Code:wght@400;700&family=IBM+Plex+Mono:wght@400;700&family=JetBrains+Mono:wght@400;700&family=Mountains+of+Christmas:wght@700&family=Noto+Sans+Mono:wght@400;700&family=Oswald:wght@500&family=Permanent+Marker&family=Playfair+Display:wght@700&family=Quicksand:wght@400;700&display=swap">
+    <style>
+        /*
+         * Themed version of acronyms.html. The theme palettes below are copied verbatim from
+         * newmarks.html (both pages read the same saved settings), so if a theme changes there,
+         * copy the change here too.
+         */
+        :root {
+            --bg: #f7f9fc;
+            --surface: #ffffff;
+            --text: #333333;
+            --heading: #2c3e50;
+            --muted: #7f8c8d;
+            /* Bookmark descriptions: a shade darker than --muted for readability, still clearly gray */
+            --desc: #65737a;
+            /* Blue theme (default). Hover is the accent ~18% darker so the hover keeps the same hue. */
+            --accent: #1F77B2;
+            --accent-hover: #196292;
+            --border: #eeeeee;
+            --input-bg: #ffffff;
+            --input-border: #dddddd;
+            --copy-hover: #e7f1f8;
+            --shadow: rgba(0, 0, 0, 0.1);
+            --danger: #e74c3c;
+            --chip-bg: #ffffff;
+            /* Fonts are independent of themes: applyFonts() overrides these from the Heading/Body font settings */
+            --heading-font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --body-font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* --link is intentionally not set here: it's only defined by dark themes, and use sites
+               fall back to --accent. (A :root default would resolve before body themes override --accent.) */
+        }
+
+        /* Green theme only swaps the accent family; the neutral page colors stay the same as blue */
+        body.theme-green {
+            --accent: #2E8B57;
+            --accent-hover: #267247;
+            --copy-hover: #e6f4ec;
+        }
+
+        body.theme-dark {
+            --bg: #15191f;
+            --surface: #1f252d;
+            --text: #d8dde3;
+            --heading: #e6ebf0;
+            --muted: #8f9aa5;
+            /* On a dark background "darker" would mean less readable, so keep the original muted tone */
+            --desc: #8f9aa5;
+            /* Muted version of #1F77B2 so the header bars don't glare against the dark surfaces */
+            --accent: #1B5E8C;
+            --accent-hover: #164C72;
+            --border: #2e3640;
+            --input-bg: #262d36;
+            --input-border: #3a434e;
+            --copy-hover: #2a3a4a;
+            --shadow: rgba(0, 0, 0, 0.4);
+            /* Off-white so the chips don't glare against the dark page */
+            --chip-bg: #e9ecef;
+            /* The muted accent is too dark to read as link text on dark surfaces */
+            --link: #5dade2;
+        }
+
+        /* Midnight: darker, cooler than Dark, with a teal accent */
+        body.theme-midnight {
+            --bg: #0d1321; --surface: #161e2e; --text: #cdd6e4; --heading: #e2e9f3;
+            --muted: #7d8ba1; --desc: #8a97ab; --accent: #2a5d7c; --accent-hover: #234d66;
+            --border: #253146; --input-bg: #1b2436; --input-border: #2f3c53; --copy-hover: #1f3346;
+            --shadow: rgba(0, 0, 0, 0.5); --chip-bg: #dfe6ee; --link: #6cc4d8;
+        }
+
+        /* Sand: a light theme on warm beige instead of white, with a muted slate-teal accent */
+        body.theme-sand {
+            --bg: #e9e0cf; --surface: #f4ecdd; --text: #3d3427; --heading: #4a3b28;
+            --muted: #8a7b66; --desc: #75684f; --accent: #5e7d7a; --accent-hover: #4d6764;
+            --border: #e2d6c1; --input-bg: #faf4e9; --input-border: #d6c7ac; --copy-hover: #e4e7dc;
+            --chip-bg: #faf4e9;
+        }
+
+        /* Valentine's Day */
+        body.theme-valentine {
+            --bg: #fdf0f3; --surface: #fffafb; --text: #4a2a33; --heading: #7a1f3d;
+            --muted: #a0707f; --desc: #8c6170; --accent: #d6336c; --accent-hover: #b02a59;
+            --border: #f6dde4; --input-border: #efc6d2; --copy-hover: #fbe3ea;
+        }
+
+        /* Easter: pastel lavender */
+        body.theme-easter {
+            --bg: #f3f0fa; --surface: #fdfcff; --text: #3f3a52; --heading: #5b4a8a;
+            --muted: #8c86a3; --desc: #77718f; --accent: #9775c9; --accent-hover: #7d5fae;
+            --border: #ebe6f5; --input-border: #dcd3ee; --copy-hover: #efe8fa;
+        }
+
+        /* Fourth of July: red bars, navy text */
+        body.theme-july4 {
+            --bg: #f1f4fa; --surface: #ffffff; --text: #1f2a44; --heading: #1b2a57;
+            --muted: #6b7591; --desc: #59627c; --accent: #b22234; --accent-hover: #921c2b;
+            --border: #e6e9f2; --input-border: #d3d8e6; --copy-hover: #fbe9eb;
+        }
+
+        /* Halloween: near-black purple with pumpkin orange */
+        body.theme-halloween {
+            --bg: #120d14; --surface: #1e1720; --text: #e8dccf; --heading: #f2e6d8;
+            --muted: #9c8c80; --desc: #a39486; --accent: #c2560b; --accent-hover: #9f4609;
+            --border: #33283a; --input-bg: #261d29; --input-border: #403344; --copy-hover: #3a2618;
+            --shadow: rgba(0, 0, 0, 0.5); --chip-bg: #f1e7dc; --link: #ff9a3c;
+        }
+
+        /* Thanksgiving: harvest rust on cream */
+        body.theme-thanksgiving {
+            --bg: #f5ead9; --surface: #fdf7ee; --text: #43301f; --heading: #6b3a14;
+            --muted: #97806a; --desc: #806a54; --accent: #b5541c; --accent-hover: #944516;
+            --border: #efe1cc; --input-bg: #fffaf2; --input-border: #e0cbab; --copy-hover: #f7e3cd;
+            --chip-bg: #fffaf2;
+        }
+
+        /* Christmas: evergreen bars, cranberry headings */
+        body.theme-christmas {
+            --bg: #f6f3ee; --surface: #fffdf9; --text: #2b2b2b; --heading: #a61e2b;
+            --muted: #7c7a74; --desc: #67655f; --accent: #1d6b3a; --accent-hover: #17572f;
+            --border: #ece6dc; --input-border: #ddd4c5; --copy-hover: #e6f1e9;
+        }
+
+        /* New Year's: black and gold */
+        body.theme-newyear {
+            --bg: #0e0e10; --surface: #1a1a1e; --text: #e4e1d8; --heading: #f1e6c4;
+            --muted: #8f8b80; --desc: #9a968b; --accent: #8a6d1f; --accent-hover: #715a19;
+            --border: #2c2b2f; --input-bg: #222226; --input-border: #3a393e; --copy-hover: #2f2a1c;
+            --shadow: rgba(0, 0, 0, 0.5); --chip-bg: #f3ecd8; --link: #e0bd5a;
+        }
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: var(--body-font);
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: var(--bg);
+            color: var(--text);
+        }
+
+        /* ---------- Navigation (same as newmarks.html) ---------- */
+        .nav-header {
+            background-color: var(--accent);
+            border-radius: 8px;
+            margin: 0 auto 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: fit-content;
+            padding: 10px 20px;
+        }
+
+        .nav-link {
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            border-radius: 5px;
+            margin: 0 5px;
+        }
+
+        .nav-link:hover,
+        .nav-link.active { background-color: var(--accent-hover); }
+        .nav-link.active { font-weight: bold; }
+
+        .container {
+            background-color: var(--surface);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px var(--shadow);
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        /* ---------- Acronym form & controls (layout from style.css, colors from the theme) ---------- */
+        .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
+
+        .input-group input,
+        .controls input,
+        .controls select {
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid var(--input-border);
+            font-size: 14px;
+            font-family: inherit;
+            background: var(--input-bg);
+            color: var(--text);
+        }
+
+        .input-group input { flex-grow: 1; }
+        .controls { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 20px; }
+        .controls > div { display: flex; gap: 10px; }
+        #searchBox { width: 300px; }
+
+        .btn {
+            padding: 10px 14px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-primary:hover { background: var(--accent-hover); }
+        .btn-secondary { background: var(--border); color: var(--text); }
+        .btn-secondary:hover { background: var(--input-border); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-sm { padding: 5px 10px; font-size: 13px; }
+        .hidden { display: none; }
+
+        /* ---------- Table ---------- */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border); }
+        th { background-color: var(--bg); color: var(--heading); cursor: pointer; font-family: var(--heading-font); }
+        th:hover { background-color: var(--copy-hover); }
+        tbody tr:hover { background-color: var(--copy-hover); }
+        .actions { display: flex; gap: 5px; }
+        .acronym-cell { font-weight: 700; color: var(--heading); }
+
+        .category-tag {
+            display: inline-block;
+            background-color: var(--border);
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
+        /* Status colors are fixed (not themed) so success/error read the same on every theme */
+        .status { margin-top: 20px; padding: 10px; border-radius: 4px; text-align: center; display: none; }
+        .status.success { background-color: #d4edda; color: #155724; display: block; }
+        .status.error { background-color: #f8d7da; color: #721c24; display: block; }
+
+        /* ---------- Footer (same look as newmarks.html) ---------- */
+        /* One row: Settings on the left, storage note on the right */
+        .page-footer { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 0 20px; }
+        .footer-note { color: var(--muted); font-size: 13px; margin: 0; }
+
+        .footer-link {
+            background: none;
+            border: none;
+            font: inherit;
+            font-size: 14px;
+            color: var(--muted);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.2s;
+        }
+
+        .footer-link:hover { color: var(--accent); }
+
+        /* ---------- Settings modal (subset of newmarks.html's) ---------- */
+        .modal { display: none; position: fixed; z-index: 1000; inset: 0; background: rgba(0, 0, 0, 0.5); }
+        .modal.active { display: flex; align-items: center; justify-content: center; }
+
+        .modal-content {
+            background: var(--surface);
+            color: var(--text);
+            padding: 25px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 480px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+        }
+
+        .modal-header { font-size: 20px; font-weight: 700; color: var(--heading); margin-bottom: 18px; }
+        .form-group { margin-bottom: 14px; }
+        .form-label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 13px; }
+        .form-hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+        .form-select {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid var(--input-border);
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+            background: var(--input-bg);
+            color: var(--text);
+        }
+
+        .checkbox-row { display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; }
+        .modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
+        .modal-buttons .btn { flex: 1; }
+        .settings-section { margin-bottom: 18px; }
+        .settings-section-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 8px; }
+
+        .theme-swatch {
+            width: 24px;
+            height: 24px;
+            padding: 0;
+            margin-right: 8px;
+            border-radius: 50%;
+            border: 2px solid var(--input-border);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .theme-row { display: flex; flex-wrap: wrap; gap: 8px 0; }
+        .theme-swatch:hover { transform: scale(1.15); }
+        .theme-swatch.active { border-color: var(--text); box-shadow: 0 0 0 2px var(--input-border); }
+
+        @media (max-width: 768px) {
+            .input-group, .controls { flex-direction: column; }
+            #searchBox { width: 100%; }
+            .nav-header { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="nav-header">
+        <a href="newmarks.html" class="nav-link">Bookmarks</a>
+        <a href="new-acronyms.html" class="nav-link active">Acronyms</a>
+    </div>
+
+    <div class="container">
+        <div class="input-group">
+            <input type="text" id="acronymInput" placeholder="Enter acronym (e.g., HTML)">
+            <input type="text" id="definitionInput" placeholder="Enter definition (e.g., HyperText Markup Language)">
+            <input type="text" id="categoryInput" placeholder="Enter category (e.g., Tech)">
+            <button class="btn btn-primary" id="addBtn">Add</button>
+            <button class="btn btn-primary hidden" id="updateBtn">Update</button>
+            <button class="btn btn-secondary hidden" id="cancelBtn">Cancel</button>
+        </div>
+
+        <div class="status" id="statusMsg"></div>
+
+        <div class="controls">
+            <input type="text" id="searchBox" placeholder="Search acronyms...">
+            <div>
+                <select id="sortSelect">
+                    <option value="acronym">Sort by Acronym</option>
+                    <option value="definition">Sort by Definition</option>
+                    <option value="category">Sort by Category</option>
+                    <option value="date">Sort by Date Added</option>
+                </select>
+                <button class="btn btn-secondary" id="exportBtn"><i class="ph ph-download-simple"></i>Export</button>
+                <button class="btn btn-secondary" id="importBtn"><i class="ph ph-upload-simple"></i>Import</button>
+                <input type="file" id="fileInput" accept=".json" style="display:none">
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th data-sort="acronym">Acronym</th>
+                    <th data-sort="definition">Definition</th>
+                    <th data-sort="category">Category</th>
+                    <th data-sort="date">Date Added</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="acronymList"></tbody>
+        </table>
+    </div>
+
+    <footer class="page-footer">
+        <button class="footer-link" id="settingsBtn" title="Settings"><i class="ph ph-gear"></i>Settings</button>
+        <p class="footer-note">All data is stored locally in your browser.</p>
+    </footer>
+
+    <!-- Settings modal: only the settings that apply to this page. They're shared with newmarks.html. -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header"><i class="ph ph-gear"></i> Settings</div>
+            <div class="settings-section">
+                <div class="settings-section-title">Appearance</div>
+                <div class="form-group">
+                    <label class="form-label">Theme</label>
+                    <div class="theme-row" id="themeRow"></div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="setHeadingFont">Heading font (table headers)</label>
+                    <select class="form-select" id="setHeadingFont"></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="setBodyFont">Body font</label>
+                    <select class="form-select" id="setBodyFont"></select>
+                </div>            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" id="closeSettings">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ============ SHARED SETTINGS ============ */
+        // Same key as newmarks.html, so theme and font choices carry across both pages.
+        const SETTINGS_KEY = 'nm_settings';
+        // Same key as acronyms.html, so both pages show and edit the same list.
+        const ACRONYMS_KEY = 'acronyms';
+
+        // Defaults match newmarks.html. Fields this page doesn't use (iconStyle, favicons, ...) are
+        // still loaded and written back untouched, so saving here never wipes newmarks' settings.
+        let settings = {
+            theme: 'blue',
+            headingFont: 'system',
+            bodyFont: 'system'
+        };
+
+        /**
+         * Load shared settings. try/catch because storage can be blocked or hold corrupt JSON.
+         * @returns {void}
+         */
+        function loadSettings() {
+            try {
+                const raw = localStorage.getItem(SETTINGS_KEY);
+                if (raw) Object.assign(settings, JSON.parse(raw));
+            } catch (e) { /* keep defaults */ }
+        }
+
+        /**
+         * Save shared settings. Re-reads storage first and merges, so a change made on newmarks.html
+         * since this page loaded isn't overwritten by this page's older copy.
+         * @param {object} changes - Settings fields to update.
+         * @returns {void}
+         */
+        function saveSettings(changes) {
+            Object.assign(settings, changes);
+            try {
+                const stored = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
+                localStorage.setItem(SETTINGS_KEY, JSON.stringify(Object.assign(stored, changes)));
+            } catch (e) {
+                console.error('Could not save settings:', e);
+            }
+        }
+
+        /**
+         * Escape text for safe insertion into HTML. acronyms.html inserted user text raw; escaping
+         * here means an acronym or definition containing "<" can't break the table.
+         * @param {string} str - Raw user text.
+         * @returns {string} HTML-escaped text.
+         */
+        function esc(str) {
+            return String(str ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+
+        /* ============ THEME ============ */
+
+        /*
+         * Every theme, in swatch order. `id` must match a body.theme-<id> CSS block (blue has none: it's
+         * the :root default). `bg`/`accent` only paint the swatch, which shows both halves so themes that
+         * share an accent hue (e.g. Sand vs. Thanksgiving) are still distinguishable.
+         */
+        const THEMES = [
+            { id: 'blue', title: 'Blue', bg: '#f7f9fc', accent: '#1F77B2' },
+            { id: 'green', title: 'Green', bg: '#f7f9fc', accent: '#2E8B57' },
+            { id: 'sand', title: 'Sand', bg: '#e9e0cf', accent: '#5e7d7a' },
+            { id: 'dark', title: 'Dark', bg: '#15191f', accent: '#1B5E8C' },
+            { id: 'midnight', title: 'Midnight', bg: '#0d1321', accent: '#2a5d7c' },
+            { id: 'newyear', title: "New Year's", bg: '#0e0e10', accent: '#c9a43a' },
+            { id: 'valentine', title: "Valentine's Day", bg: '#fdf0f3', accent: '#d6336c' },
+            { id: 'easter', title: 'Easter', bg: '#f3f0fa', accent: '#9775c9' },
+            { id: 'july4', title: 'Fourth of July', bg: '#1b2a57', accent: '#b22234' },
+            { id: 'halloween', title: 'Halloween', bg: '#120d14', accent: '#c2560b' },
+            { id: 'thanksgiving', title: 'Thanksgiving', bg: '#f5ead9', accent: '#b5541c' },
+            { id: 'christmas', title: 'Christmas', bg: '#a61e2b', accent: '#1d6b3a' }
+        ];
+
+        /*
+         * Font choices for the Heading/Body font settings. `body: false` marks display fonts that are fine
+         * at heading size but hard to read in paragraphs, so they're left out of the Body list.
+         * Web fonts load from the Google Fonts <link>; Cascadia Code and Consolas ship with Windows 11.
+         */
+        const FONTS = [
+            { id: 'system', label: 'Segoe UI (default)', stack: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", body: true },
+            { id: 'georgia', label: 'Georgia', stack: "Georgia, 'Times New Roman', serif", body: true },
+            { id: 'quicksand', label: 'Quicksand', stack: "'Quicksand', sans-serif", body: true },
+            { id: 'bitter', label: 'Bitter', stack: "'Bitter', Georgia, serif", body: true },
+            { id: 'playfair', label: 'Playfair Display', stack: "'Playfair Display', Georgia, serif", body: false },
+            { id: 'oswald', label: 'Oswald', stack: "'Oswald', sans-serif", body: false },
+            { id: 'dancing', label: 'Dancing Script', stack: "'Dancing Script', cursive", body: false },
+            { id: 'creepster', label: 'Creepster', stack: "'Creepster', cursive", body: false },
+            { id: 'christmas', label: 'Mountains of Christmas', stack: "'Mountains of Christmas', cursive", body: false },
+            // All-caps display faces: they have no real lowercase, so they're heading-only.
+            { id: 'bebas', label: 'Bebas Neue', stack: "'Bebas Neue', Impact, sans-serif", body: false },
+            { id: 'marker', label: 'Permanent Marker', stack: "'Permanent Marker', cursive", body: false },
+            { id: 'bungee', label: 'Bungee', stack: "'Bungee', Impact, sans-serif", body: false },
+            { id: 'cinzel', label: 'Cinzel', stack: "'Cinzel', Georgia, serif", body: false },
+            { id: 'jetbrains', label: 'JetBrains Mono', stack: "'JetBrains Mono', Consolas, monospace", body: true },
+            { id: 'fira', label: 'Fira Code', stack: "'Fira Code', Consolas, monospace", body: true },
+            { id: 'plex', label: 'IBM Plex Mono', stack: "'IBM Plex Mono', Consolas, monospace", body: true },
+            { id: 'noto', label: 'Noto Sans Mono (successor to Droid Sans Mono)', stack: "'Noto Sans Mono', 'Droid Sans Mono', Consolas, monospace", body: true },
+            { id: 'cascadia', label: 'Cascadia Code (Windows)', stack: "'Cascadia Code', 'Cascadia Mono', Consolas, monospace", body: true },
+            { id: 'consolas', label: 'Consolas (Windows)', stack: "Consolas, 'Andale Mono', monospace", body: true }
+        ];
+
+        /**
+         * Fill the Heading and Body font dropdowns from FONTS, alphabetized by label.
+         * Sorting here (not in FONTS itself) keeps FONTS[0] as the system-font fallback in applyFonts().
+         * Each option is styled in its own font so the list previews the faces (supported by Firefox's native dropdown).
+         * @returns {void}
+         */
+        function renderFontOptions() {
+            const sorted = [...FONTS].sort((a, b) => a.label.localeCompare(b.label));
+            const opts = list => list.map(f => `<option value="${f.id}" style="font-family:${esc(f.stack)}">${esc(f.label)}</option>`).join('');
+            document.getElementById('setHeadingFont').innerHTML = opts(sorted);
+            document.getElementById('setBodyFont').innerHTML = opts(sorted.filter(f => f.body));
+        }
+
+        /**
+         * Apply the chosen fonts by overriding the CSS variables on <body>.
+         * Unknown ids (e.g. a font removed from FONTS later) fall back to the system font.
+         * @returns {void}
+         */
+        function applyFonts() {
+            const stack = id => (FONTS.find(f => f.id === id) || FONTS[0]).stack;
+            document.body.style.setProperty('--heading-font', stack(settings.headingFont));
+            document.body.style.setProperty('--body-font', stack(settings.bodyFont));
+            // The closed dropdowns show the current choice in its own face too, not just the open list.
+            document.getElementById('setHeadingFont').style.fontFamily = stack(settings.headingFont);
+            document.getElementById('setBodyFont').style.fontFamily = stack(settings.bodyFont);
+        }
+
+        /**
+         * Draw one swatch per theme in the Settings modal. Each is split diagonally: background / accent.
+         * @returns {void}
+         */
+        function renderThemeRow() {
+            document.getElementById('themeRow').innerHTML = THEMES
+                .map(t => `<button class="theme-swatch" data-action="set-theme" data-theme="${t.id}" title="${esc(t.title)}" style="background:linear-gradient(135deg, ${t.bg} 50%, ${t.accent} 50%)"></button>`)
+                .join('');
+        }
+
+        /**
+         * Apply the saved theme to <body> and highlight its swatch. Blue is the default (no class),
+         * so any unknown value, e.g. 'light' saved by the earlier version of this page, falls back to blue.
+         * @returns {void}
+         */
+        function applyTheme() {
+            const active = THEMES.some(t => t.id === settings.theme) ? settings.theme : 'blue';
+            THEMES.forEach(t => document.body.classList.toggle('theme-' + t.id, t.id === active && t.id !== 'blue'));
+            document.querySelectorAll('.theme-swatch').forEach(s => s.classList.toggle('active', s.dataset.theme === active));
+        }
+
+        /* ============ SETTINGS MODAL WIRING ============ */
+        const settingsModal = document.getElementById('settingsModal');
+
+        document.getElementById('settingsBtn').addEventListener('click', () => {
+            document.getElementById('setHeadingFont').value = settings.headingFont;
+            document.getElementById('setBodyFont').value = settings.bodyFont;
+            settingsModal.classList.add('active');
+        });
+        document.getElementById('closeSettings').addEventListener('click', () => settingsModal.classList.remove('active'));
+        // Clicking the dimmed backdrop (not the dialog itself) closes the modal, as in newmarks.html.
+        settingsModal.addEventListener('click', e => { if (e.target === settingsModal) settingsModal.classList.remove('active'); });
+
+        document.getElementById('themeRow').addEventListener('click', e => {
+            const swatch = e.target.closest('.theme-swatch');
+            if (swatch) { saveSettings({ theme: swatch.dataset.theme }); applyTheme(); }
+        });
+        document.getElementById('setHeadingFont').addEventListener('change', e => { saveSettings({ headingFont: e.target.value }); applyFonts(); });
+        document.getElementById('setBodyFont').addEventListener('change', e => { saveSettings({ bodyFont: e.target.value }); applyFonts(); });
+
+        /* ============ ACRONYM TRACKER (behavior ported from acronyms.html) ============ */
+        const acronymInput = document.getElementById('acronymInput');
+        const definitionInput = document.getElementById('definitionInput');
+        const categoryInput = document.getElementById('categoryInput');
+        const addBtn = document.getElementById('addBtn');
+        const updateBtn = document.getElementById('updateBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const acronymList = document.getElementById('acronymList');
+        const searchBox = document.getElementById('searchBox');
+        const sortSelect = document.getElementById('sortSelect');
+        const statusMsg = document.getElementById('statusMsg');
+        const fileInput = document.getElementById('fileInput');
+
+        let acronyms = [];
+        let currentAcronymId = null;   // id being edited, or null when adding
+        let statusTimer = null;
+
+        /**
+         * Load acronyms from the key acronyms.html uses; seed the same three examples it does when empty.
+         * @returns {void}
+         */
+        function loadAcronyms() {
+            try {
+                acronyms = JSON.parse(localStorage.getItem(ACRONYMS_KEY)) || [];
+            } catch (e) {
+                acronyms = [];
+            }
+            if (acronyms.length === 0) {
+                const now = new Date().toISOString();
+                acronyms = [
+                    { id: '1', acronym: 'HTML', definition: 'HyperText Markup Language', category: 'Web Development', dateAdded: now },
+                    { id: '2', acronym: 'CSS', definition: 'Cascading Style Sheets', category: 'Web Development', dateAdded: now },
+                    { id: '3', acronym: 'JSON', definition: 'JavaScript Object Notation', category: 'Programming', dateAdded: now }
+                ];
+                saveAcronyms();
+            }
+        }
+
+        /**
+         * Persist acronyms.
+         * @returns {void}
+         */
+        function saveAcronyms() {
+            try {
+                localStorage.setItem(ACRONYMS_KEY, JSON.stringify(acronyms));
+            } catch (e) {
+                console.error('Could not save acronyms:', e);
+            }
+        }
+
+        /**
+         * Read and validate the three inputs.
+         * @returns {{acronym:string, definition:string, category:string}|null} Values, or null if invalid.
+         */
+        function readInputs() {
+            const values = {
+                acronym: acronymInput.value.trim(),
+                definition: definitionInput.value.trim(),
+                category: categoryInput.value.trim() || 'Uncategorized'
+            };
+            if (!values.acronym || !values.definition) {
+                showStatus('Please enter both acronym and definition.', 'error');
+                return null;
+            }
+            return values;
+        }
+
+        /**
+         * True if another entry (not `exceptId`) already uses this acronym, case-insensitively.
+         * @param {string} acronym - Acronym to check.
+         * @param {string|null} exceptId - Id to ignore (the one being edited).
+         * @returns {boolean}
+         */
+        function isDuplicate(acronym, exceptId) {
+            return acronyms.some(item => item.id !== exceptId && item.acronym.toLowerCase() === acronym.toLowerCase());
+        }
+
+        /**
+         * Add a new acronym from the inputs.
+         * @returns {void}
+         */
+        function addAcronym() {
+            const values = readInputs();
+            if (!values) return;
+            if (isDuplicate(values.acronym, null)) { showStatus('This acronym already exists!', 'error'); return; }
+            acronyms.push({ id: Date.now().toString(), ...values, dateAdded: new Date().toISOString() });
+            saveAcronyms();
+            clearInputs();
+            showStatus('Acronym added successfully!', 'success');
+            renderAcronyms();
+        }
+
+        /**
+         * Load an acronym into the inputs and switch the buttons to Update/Cancel.
+         * @param {string} id - Acronym id.
+         * @returns {void}
+         */
+        function editAcronym(id) {
+            const item = acronyms.find(a => a.id === id);
+            if (!item) return;
+            acronymInput.value = item.acronym;
+            definitionInput.value = item.definition;
+            categoryInput.value = item.category;
+            addBtn.classList.add('hidden');
+            updateBtn.classList.remove('hidden');
+            cancelBtn.classList.remove('hidden');
+            currentAcronymId = id;
+            acronymInput.focus();
+        }
+
+        /**
+         * Save the edited acronym.
+         * @returns {void}
+         */
+        function updateAcronym() {
+            const values = readInputs();
+            if (!values) return;
+            if (isDuplicate(values.acronym, currentAcronymId)) { showStatus('This acronym already exists!', 'error'); return; }
+            const index = acronyms.findIndex(a => a.id === currentAcronymId);
+            if (index === -1) return;
+            acronyms[index] = { ...acronyms[index], ...values };
+            saveAcronyms();
+            cancelEdit();
+            showStatus('Acronym updated successfully!', 'success');
+            renderAcronyms();
+        }
+
+        /**
+         * Empty the three inputs.
+         * @returns {void}
+         */
+        function clearInputs() {
+            acronymInput.value = '';
+            definitionInput.value = '';
+            categoryInput.value = '';
+        }
+
+        /**
+         * Leave edit mode and restore the Add button.
+         * @returns {void}
+         */
+        function cancelEdit() {
+            clearInputs();
+            addBtn.classList.remove('hidden');
+            updateBtn.classList.add('hidden');
+            cancelBtn.classList.add('hidden');
+            currentAcronymId = null;
+        }
+
+        /**
+         * Delete an acronym after confirmation.
+         * @param {string} id - Acronym id.
+         * @returns {void}
+         */
+        function deleteAcronym(id) {
+            if (!confirm('Are you sure you want to delete this acronym?')) return;
+            acronyms = acronyms.filter(a => a.id !== id);
+            saveAcronyms();
+            showStatus('Acronym deleted successfully!', 'success');
+            renderAcronyms();
+        }
+
+        /**
+         * Rebuild the table from `acronyms`, applying the search filter and sort order.
+         * @returns {void}
+         */
+        function renderAcronyms() {
+            const term = searchBox.value.toLowerCase();
+            const sortBy = sortSelect.value;
+            const rows = acronyms
+                .filter(a => [a.acronym, a.definition, a.category].some(v => v.toLowerCase().includes(term)))
+                .sort((a, b) => sortBy === 'date'
+                    ? new Date(b.dateAdded) - new Date(a.dateAdded)   // newest first, as in acronyms.html
+                    : a[sortBy].toLowerCase().localeCompare(b[sortBy].toLowerCase()));
+
+            acronymList.innerHTML = rows.length === 0
+                ? '<tr><td colspan="5" style="text-align:center;">No acronyms found.</td></tr>'
+                : rows.map(a => `<tr>
+                    <td class="acronym-cell">${esc(a.acronym)}</td>
+                    <td>${esc(a.definition)}</td>
+                    <td><span class="category-tag">${esc(a.category)}</span></td>
+                    <td>${new Date(a.dateAdded).toLocaleDateString()}</td>
+                    <td class="actions">
+                        <button class="btn btn-secondary btn-sm" data-edit="${esc(a.id)}"><i class="ph ph-pencil-simple"></i>Edit</button>
+                        <button class="btn btn-danger btn-sm" data-delete="${esc(a.id)}"><i class="ph ph-trash"></i>Delete</button>
+                    </td>
+                </tr>`).join('');
+        }
+
+        /**
+         * Show a status message for 3 seconds. Restarting the timer stops an older message's
+         * timeout from clearing a newer one early.
+         * @param {string} message - Text to show.
+         * @param {'success'|'error'} type - Message style.
+         * @returns {void}
+         */
+        function showStatus(message, type) {
+            clearTimeout(statusTimer);
+            statusMsg.textContent = message;
+            statusMsg.className = 'status ' + type;
+            statusTimer = setTimeout(() => { statusMsg.className = 'status'; statusMsg.textContent = ''; }, 3000);
+        }
+
+        /**
+         * Download all acronyms as acronyms.json (same format as acronyms.html, so files work in either page).
+         * @returns {void}
+         */
+        function exportAcronyms() {
+            if (acronyms.length === 0) { showStatus('No acronyms to export!', 'error'); return; }
+            const blob = new Blob([JSON.stringify(acronyms, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'acronyms.json';
+            a.click();
+            URL.revokeObjectURL(a.href);
+            showStatus('Acronyms exported successfully!', 'success');
+        }
+
+        /**
+         * Merge acronyms from a JSON file, skipping any whose id or acronym already exists.
+         * @param {File} file - The selected .json file.
+         * @returns {void}
+         */
+        function importAcronyms(file) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (!Array.isArray(imported)) throw new Error('Invalid format');
+                    imported.forEach(item => {
+                        if (!item.id || !item.acronym || !item.definition) throw new Error('Invalid acronym data');
+                    });
+                    const ids = new Set(acronyms.map(a => a.id));
+                    const names = new Set(acronyms.map(a => a.acronym.toLowerCase()));
+                    // Older files may lack a category or date; fill them so sorting/rendering never hits undefined.
+                    const added = imported
+                        .filter(item => !ids.has(item.id) && !names.has(item.acronym.toLowerCase()))
+                        .map(item => ({ category: 'Uncategorized', dateAdded: new Date().toISOString(), ...item }));
+                    acronyms = [...acronyms, ...added];
+                    saveAcronyms();
+                    renderAcronyms();
+                    showStatus(`Imported ${added.length} new acronyms!`, 'success');
+                } catch (err) {
+                    showStatus('Failed to import: Invalid file format', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        addBtn.addEventListener('click', addAcronym);
+        updateBtn.addEventListener('click', updateAcronym);
+        cancelBtn.addEventListener('click', cancelEdit);
+        searchBox.addEventListener('input', renderAcronyms);
+        sortSelect.addEventListener('change', renderAcronyms);
+        document.getElementById('exportBtn').addEventListener('click', exportAcronyms);
+        document.getElementById('importBtn').addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', e => {
+            if (e.target.files[0]) importAcronyms(e.target.files[0]);
+            e.target.value = ''; // allow re-importing the same file
+        });
+
+        // One delegated listener for the row buttons, since the table is rebuilt on every render.
+        acronymList.addEventListener('click', e => {
+            const btn = e.target.closest('button');
+            if (!btn) return;
+            if (btn.dataset.edit) editAcronym(btn.dataset.edit);
+            else if (btn.dataset.delete) deleteAcronym(btn.dataset.delete);
+        });
+
+        // Clicking a column header sorts by it.
+        document.querySelectorAll('th[data-sort]').forEach(th => th.addEventListener('click', () => {
+            sortSelect.value = th.dataset.sort;
+            renderAcronyms();
+        }));
+
+        /* ============ INIT ============ */
+        loadSettings();
+        renderThemeRow(); // before applyTheme(), which highlights the active swatch
+        applyTheme();
+        renderFontOptions();
+        applyFonts();
+        loadAcronyms();
+        renderAcronyms();
+    </script>
+</body>
+
+</html>

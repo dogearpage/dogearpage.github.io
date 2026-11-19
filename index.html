@@ -1,0 +1,1688 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="./bookmark-favicon.png" type="image/png">
+    <title>Chris's Bookmarks</title>
+    <!-- Phosphor icons (regular weight). Pinned version so an upstream release can't change the look. -->
+    <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+    <!-- Duotone weight, used by the "Colorful" icon style -->
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css">
+    <!-- Web fonts for the Heading/Body font settings (see FONTS). If offline, text falls back to the next font in each stack. -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bitter:wght@400;700&family=Bungee&family=Cinzel:wght@700&family=Creepster&family=Dancing+Script:wght@700&family=Fira+Code:wght@400;700&family=IBM+Plex+Mono:wght@400;700&family=JetBrains+Mono:wght@400;700&family=Mountains+of+Christmas:wght@700&family=Noto+Sans+Mono:wght@400;700&family=Oswald:wght@500&family=Permanent+Marker&family=Playfair+Display:wght@700&family=Quicksand:wght@400;700&display=swap">
+    <style>
+        /*
+         * Self-contained styles adapted from style.css so this page can evolve
+         * independently of bookmarks.html / acronyms.html. All colors are
+         * variables so the dark theme only has to override the palette.
+         */
+        :root {
+            --bg: #f7f9fc;
+            --surface: #ffffff;
+            --text: #333333;
+            --heading: #2c3e50;
+            --muted: #7f8c8d;
+            /* Bookmark descriptions: a shade darker than --muted for readability, still clearly gray */
+            --desc: #65737a;
+            /* Blue theme (default). Hover is the accent ~18% darker so the hover keeps the same hue. */
+            --accent: #1F77B2;
+            --accent-hover: #196292;
+            --border: #eeeeee;
+            --input-bg: #ffffff;
+            --input-border: #dddddd;
+            --copy-hover: #e7f1f8;
+            --shadow: rgba(0, 0, 0, 0.1);
+            --danger: #e74c3c;
+            --chip-bg: #ffffff;
+            /* Fonts are independent of themes: applyFonts() overrides these from the Heading/Body font settings */
+            --heading-font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --body-font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* --link is intentionally not set here: it's only defined by dark themes, and use sites
+               fall back to --accent. (A :root default would resolve before body themes override --accent.) */
+        }
+
+        /* Green theme only swaps the accent family; the neutral page colors stay the same as blue */
+        body.theme-green {
+            --accent: #2E8B57;
+            --accent-hover: #267247;
+            --copy-hover: #e6f4ec;
+        }
+
+        body.theme-dark {
+            --bg: #15191f;
+            --surface: #1f252d;
+            --text: #d8dde3;
+            --heading: #e6ebf0;
+            --muted: #8f9aa5;
+            /* On a dark background "darker" would mean less readable, so keep the original muted tone */
+            --desc: #8f9aa5;
+            /* Muted version of #1F77B2 so the header bars don't glare against the dark surfaces */
+            --accent: #1B5E8C;
+            --accent-hover: #164C72;
+            --border: #2e3640;
+            --input-bg: #262d36;
+            --input-border: #3a434e;
+            --copy-hover: #2a3a4a;
+            --shadow: rgba(0, 0, 0, 0.4);
+            /* Off-white so the chips don't glare against the dark page */
+            --chip-bg: #e9ecef;
+            /* The muted accent is too dark to read as link text on dark surfaces */
+            --link: #5dade2;
+        }
+
+        /* Midnight: darker, cooler than Dark, with a teal accent */
+        body.theme-midnight {
+            --bg: #0d1321; --surface: #161e2e; --text: #cdd6e4; --heading: #e2e9f3;
+            --muted: #7d8ba1; --desc: #8a97ab; --accent: #2a5d7c; --accent-hover: #234d66;
+            --border: #253146; --input-bg: #1b2436; --input-border: #2f3c53; --copy-hover: #1f3346;
+            --shadow: rgba(0, 0, 0, 0.5); --chip-bg: #dfe6ee; --link: #6cc4d8;
+        }
+
+        /* Sand: a light theme on warm beige instead of white, with a muted slate-teal accent */
+        body.theme-sand {
+            --bg: #e9e0cf; --surface: #f4ecdd; --text: #3d3427; --heading: #4a3b28;
+            --muted: #8a7b66; --desc: #75684f; --accent: #5e7d7a; --accent-hover: #4d6764;
+            --border: #e2d6c1; --input-bg: #faf4e9; --input-border: #d6c7ac; --copy-hover: #e4e7dc;
+            --chip-bg: #faf4e9;
+        }
+
+        /* Valentine's Day */
+        body.theme-valentine {
+            --bg: #fdf0f3; --surface: #fffafb; --text: #4a2a33; --heading: #7a1f3d;
+            --muted: #a0707f; --desc: #8c6170; --accent: #d6336c; --accent-hover: #b02a59;
+            --border: #f6dde4; --input-border: #efc6d2; --copy-hover: #fbe3ea;
+        }
+
+        /* Easter: pastel lavender */
+        body.theme-easter {
+            --bg: #f3f0fa; --surface: #fdfcff; --text: #3f3a52; --heading: #5b4a8a;
+            --muted: #8c86a3; --desc: #77718f; --accent: #9775c9; --accent-hover: #7d5fae;
+            --border: #ebe6f5; --input-border: #dcd3ee; --copy-hover: #efe8fa;
+        }
+
+        /* Fourth of July: red bars, navy text */
+        body.theme-july4 {
+            --bg: #f1f4fa; --surface: #ffffff; --text: #1f2a44; --heading: #1b2a57;
+            --muted: #6b7591; --desc: #59627c; --accent: #b22234; --accent-hover: #921c2b;
+            --border: #e6e9f2; --input-border: #d3d8e6; --copy-hover: #fbe9eb;
+        }
+
+        /* Halloween: near-black purple with pumpkin orange */
+        body.theme-halloween {
+            --bg: #120d14; --surface: #1e1720; --text: #e8dccf; --heading: #f2e6d8;
+            --muted: #9c8c80; --desc: #a39486; --accent: #c2560b; --accent-hover: #9f4609;
+            --border: #33283a; --input-bg: #261d29; --input-border: #403344; --copy-hover: #3a2618;
+            --shadow: rgba(0, 0, 0, 0.5); --chip-bg: #f1e7dc; --link: #ff9a3c;
+        }
+
+        /* Thanksgiving: harvest rust on cream */
+        body.theme-thanksgiving {
+            --bg: #f5ead9; --surface: #fdf7ee; --text: #43301f; --heading: #6b3a14;
+            --muted: #97806a; --desc: #806a54; --accent: #b5541c; --accent-hover: #944516;
+            --border: #efe1cc; --input-bg: #fffaf2; --input-border: #e0cbab; --copy-hover: #f7e3cd;
+            --chip-bg: #fffaf2;
+        }
+
+        /* Christmas: evergreen bars, cranberry headings */
+        body.theme-christmas {
+            --bg: #f6f3ee; --surface: #fffdf9; --text: #2b2b2b; --heading: #a61e2b;
+            --muted: #7c7a74; --desc: #67655f; --accent: #1d6b3a; --accent-hover: #17572f;
+            --border: #ece6dc; --input-border: #ddd4c5; --copy-hover: #e6f1e9;
+        }
+
+        /* New Year's: black and gold */
+        body.theme-newyear {
+            --bg: #0e0e10; --surface: #1a1a1e; --text: #e4e1d8; --heading: #f1e6c4;
+            --muted: #8f8b80; --desc: #9a968b; --accent: #8a6d1f; --accent-hover: #715a19;
+            --border: #2c2b2f; --input-bg: #222226; --input-border: #3a393e; --copy-hover: #2f2a1c;
+            --shadow: rgba(0, 0, 0, 0.5); --chip-bg: #f3ecd8; --link: #e0bd5a;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: var(--body-font);
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: var(--bg);
+            color: var(--text);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--heading);
+            margin: 0 0 30px;
+            font-family: var(--heading-font);
+        }
+
+        h1 .ph { vertical-align: -4px; margin-right: 8px; }
+
+        /* ---------- Navigation ---------- */
+        .nav-header {
+            background-color: var(--accent);
+            border-radius: 8px;
+            margin: 0 auto 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: fit-content;
+            padding: 10px 20px;
+        }
+
+        .nav-link {
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            border-radius: 5px;
+            margin: 0 5px;
+            /* Reset so <button> nav items look identical to <a> nav items */
+            background: none;
+            border: none;
+            font: inherit;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-link:hover,
+        .nav-link.active { background-color: var(--accent-hover); }
+        .nav-link.active { font-weight: bold; }
+        /* Theme swatches live in the Settings modal, so the ring uses theme colors rather than white */
+        .theme-swatch {
+            width: 24px;
+            height: 24px;
+            padding: 0;
+            margin-right: 8px;
+            border-radius: 50%;
+            border: 2px solid var(--input-border);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .theme-row { display: flex; flex-wrap: wrap; gap: 8px 0; }
+        .theme-swatch:hover { transform: scale(1.15); }
+        .theme-swatch.active { border-color: var(--text); box-shadow: 0 0 0 2px var(--input-border); }
+
+        /* ---------- Footer (Edit & Settings) ---------- */
+        /* One row: Edit & Settings grouped on the left, storage note on the right */
+        .page-footer { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 0 20px; }
+        .footer-actions { display: flex; gap: 20px; }
+        .footer-note { color: var(--muted); font-size: 13px; margin: 0; }
+
+        .footer-link {
+            /* Reset so <button> looks like a plain text link */
+            background: none;
+            border: none;
+            font: inherit;
+            font-size: 14px;
+            color: var(--muted);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.2s;
+        }
+
+        .footer-link:hover { color: var(--accent); }
+        /* Highlights Edit while edit mode is on, so it's clear how to leave it */
+        .footer-link.active { color: var(--accent); font-weight: bold; }
+
+        /* ---------- Container ---------- */
+        .container {
+            background-color: var(--surface);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px var(--shadow);
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .search-container { margin-bottom: 20px; text-align: center; }
+
+        .search-input {
+            padding: 10px;
+            width: 60%;
+            border: 1px solid var(--input-border);
+            border-radius: 4px;
+            font-size: 16px;
+            background: var(--input-bg);
+            color: var(--text);
+        }
+
+        /* ---------- Categories (2-column grid, as in bookmarks.html) ---------- */
+        .categories-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            align-items: start;
+        }
+
+        .category {
+            background-color: var(--surface);
+            border-radius: 8px;
+            box-shadow: 0 2px 5px var(--shadow);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .category-header {
+            /* Fixed height (was ~59px from padding + line-height in style.css) */
+            height: 45px;
+            padding: 0 20px;
+            background-color: var(--accent);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            transition: background-color 0.3s;
+            user-select: none;
+        }
+
+        .category-header:hover { background-color: var(--accent-hover); }
+
+        .cat-title {
+            display: flex;
+            align-items: center;
+            min-width: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-family: var(--heading-font);
+            font-size: 17px;
+        }
+
+        .category-icon { margin-right: 10px; font-size: 20px; flex-shrink: 0; }
+        /* Emoji glyphs carry their own line box; pin line-height so they don't stretch the 45px header */
+        .category-emoji { line-height: 1; }
+
+        /* "Colorful" icon style: a white chip lets any category color read cleanly on the accent bar */
+        .chip {
+            width: 28px;
+            height: 28px;
+            border-radius: 7px;
+            background: var(--chip-bg);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+
+        .chip .category-icon { margin: 0; font-size: 19px; }
+        .cat-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+
+        /* line-height pinned to 1 so the 22px chevron can't stretch the 50px header */
+        .collapse-icon-chevron { line-height: 1; }
+        .collapse-icon-chevron::before {
+            content: "›";
+            font-size: 22px;
+            font-weight: bold;
+            line-height: 1;
+            display: inline-block;
+            transform: rotate(90deg);
+            transition: transform 0.3s;
+        }
+
+        .category-header.active .collapse-icon-chevron::before { transform: rotate(270deg); }
+
+        .category-content {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        /* 2000px rather than style.css's 1000px so large categories never clip */
+        .category-content.open { max-height: 2000px; padding: 20px; }
+
+        .bookmark-list { list-style: none; padding: 0; margin: 0; }
+
+        .bookmark-item {
+            position: relative;
+            /* Tighter than style.css (12px/12px, 1.6 line-height) for a more compact list */
+            margin-bottom: 7px;
+            padding-bottom: 7px;
+            line-height: 1.35;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .bookmark-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+        .bookmark-link {
+            color: var(--heading);
+            text-decoration: none;
+            font-weight: 700;
+            /* Inline so the description follows on the same line (wrapping only when it's too long) */
+            display: inline;
+            transition: color 0.2s;
+        }
+
+        /* Dark themes set --link to a brighter tone; light themes fall back to the accent */
+        a.bookmark-link:hover { color: var(--link, var(--accent)); }
+
+        .bookmark-description { display: inline; font-size: 0.9em; color: var(--desc); margin: 0; }
+        /* Separator between link and description; added in CSS so stored data stays plain text */
+        .bookmark-description::before { content: " – "; }
+        /* No description => no dangling separator */
+        .bookmark-description:empty { display: none; }
+        /* "Below" layout: description on its own line, no separator. :not(:empty) keeps the rule above winning
+           for blank descriptions, since this selector is otherwise more specific. */
+        body.desc-below .bookmark-description:not(:empty) { display: block; margin-top: 2px; }
+        body.desc-below .bookmark-description::before { content: none; }
+        /* "None" hides descriptions but leaves them in the DOM, so search still matches their text */
+        body.desc-none .bookmark-description { display: none; }
+        .bookmark-description a { color: var(--link, var(--accent)); }
+
+        .empty-hint { color: var(--muted); font-size: 0.9em; font-style: italic; margin: 0; }
+
+        /* ---------- Quick Copy ---------- */
+        .quick-copy-item {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .copy-label { color: var(--muted); margin-right: 8px; min-width: 80px; }
+
+        .copy-value {
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 4px;
+            padding: 4px 8px;
+            margin-right: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            min-width: 0;
+            overflow-wrap: anywhere; /* long hostnames would otherwise overflow a half-width card */
+        }
+
+        .copy-value:hover { background: var(--copy-hover); }
+
+        .copy-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background-color 0.2s;
+            flex-shrink: 0;
+        }
+
+        .copy-btn:hover { background: var(--accent-hover); }
+        .copy-success { background: #28a745 !important; color: white; }
+
+        /* ---------- Edit-mode controls ---------- */
+        .icon-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            background: rgba(255, 255, 255, 0.18);
+            color: white;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+
+        .icon-btn:hover { background: rgba(255, 255, 255, 0.38); }
+        .icon-btn:disabled { opacity: 0.3; cursor: default; }
+        .icon-btn.danger { background: rgba(231, 76, 60, 0.75); }
+        .icon-btn.danger:hover { background: rgb(231, 76, 60); }
+
+        /* Buttons that sit on the card surface (not the blue header) need visible colors */
+        .item-actions .icon-btn { background: var(--border); color: var(--text); width: 26px; height: 26px; font-size: 14px; }
+        .item-actions .icon-btn:hover { background: var(--input-border); }
+        .item-actions .icon-btn.danger { background: rgba(231, 76, 60, 0.85); color: white; }
+
+        .item-actions { display: flex; gap: 4px; margin-left: 8px; }
+        .bookmark-item .item-actions { position: absolute; top: 0; right: 0; }
+        body.editing .bookmark-item { padding-right: 64px; cursor: grab; }
+        .bookmark-item.dragging { opacity: 0.4; }
+        .bookmark-item.drag-above { box-shadow: 0 -2px 0 var(--accent); }
+        .bookmark-item.drag-below { box-shadow: 0 2px 0 var(--accent); }
+
+        .add-category-tile {
+            border: 2px dashed var(--input-border);
+            border-radius: 8px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--muted);
+            cursor: pointer;
+            font-weight: 600;
+            transition: border-color 0.2s, color 0.2s;
+        }
+
+        .add-category-tile:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* Optional site favicon; vertical-align lines it up with the bold link text */
+        .favicon { width: 16px; height: 16px; margin-right: 6px; vertical-align: -3px; border-radius: 3px; }
+
+        /* Date/time line under the header; pulled up toward the h1 so the two read as one block */
+        .header-time { text-align: center; color: var(--muted); font-size: 16px; margin: -24px 0 24px; }
+        .header-time:empty { display: none; }
+        /* Without the title above it, the pull-up margin would push the time into the container's padding */
+        h1[hidden] + .header-time { margin-top: 0; }
+        .format-preview { background: var(--border); border-radius: 4px; padding: 6px 10px; font-family: monospace; font-size: 13px; margin-top: 6px; min-height: 30px; }
+
+        /* ---------- Modals ---------- */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal.active { display: flex; align-items: center; justify-content: center; }
+
+        .modal-content {
+            background: var(--surface);
+            color: var(--text);
+            padding: 25px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 480px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+        }
+
+        .modal-header { font-size: 20px; font-weight: 700; color: var(--heading); margin-bottom: 18px; }
+        .form-group { margin-bottom: 14px; }
+        .form-label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 13px; }
+        .form-hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid var(--input-border);
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+            background: var(--input-bg);
+            color: var(--text);
+        }
+
+        textarea.form-input { resize: vertical; min-height: 60px; }
+        .checkbox-row { display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; }
+        .modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
+
+        .btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-primary:hover { background: var(--accent-hover); }
+        .btn-secondary { background: var(--border); color: var(--text); }
+        .btn-secondary:hover { background: var(--input-border); }
+        .btn-danger { background: var(--danger); color: white; }
+
+        .icon-preview { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .icon-preview .ph { font-size: 32px; color: var(--accent); }
+
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(38px, 1fr));
+            gap: 4px;
+            max-height: 180px;
+            overflow-y: auto;
+            padding: 8px;
+            border: 1px solid var(--input-border);
+            border-radius: 4px;
+            margin-top: 8px;
+        }
+
+        .icon-option {
+            font-size: 22px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--text);
+        }
+
+        .icon-option:hover { background: var(--copy-hover); }
+        .icon-option.selected { background: var(--accent); color: white; }
+
+        .color-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+        .color-swatch { width: 24px; height: 24px; border-radius: 50%; border: 2px solid transparent; padding: 0; cursor: pointer; }
+        .color-swatch.selected { border-color: var(--text); }
+        .color-row input[type="color"] { width: 34px; height: 26px; padding: 0; border: 1px solid var(--input-border); border-radius: 4px; background: none; cursor: pointer; }
+
+        .settings-section { margin-bottom: 18px; }
+        .settings-section-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 8px; }
+
+        @media (max-width: 768px) {
+            .categories-container { grid-template-columns: 1fr; }
+            .search-input { width: 100%; }
+            .nav-header { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="nav-header">
+        <a href="newmarks.html" class="nav-link active">Bookmarks</a>
+        <a href="new-acronyms.html" class="nav-link">Acronyms</a>
+    </div>
+
+    <div class="container">
+        <h1 id="pageTitle"><i class="ph ph-bookmarks"></i><span id="headerText">Chris's Bookmarks</span></h1>
+        <div class="header-time" id="currentTime"></div>
+
+        <div class="search-container">
+            <input type="text" class="search-input" placeholder="Search bookmarks..." id="search-input">
+        </div>
+
+        <div class="categories-container" id="categories"></div>
+    </div>
+
+    <footer class="page-footer">
+        <div class="footer-actions">
+            <button class="footer-link" id="editToggle" data-action="toggle-edit" title="Toggle edit mode"><i class="ph ph-pencil-simple"></i>Edit</button>
+            <button class="footer-link" data-action="open-settings" title="Settings"><i class="ph ph-gear"></i>Settings</button>
+        </div>
+        <p class="footer-note">All data is stored locally in your browser.</p>
+    </footer>
+
+    <!-- Bookmark modal: shared by "add" and "edit" so the form only exists once -->
+    <div class="modal" id="bookmarkModal">
+        <div class="modal-content">
+            <div class="modal-header" id="bmTitle">Add Bookmark</div>
+            <div class="form-group"><label class="form-label" for="bmName">Name</label><input type="text" class="form-input" id="bmName"></div>
+            <div class="form-group"><label class="form-label" for="bmUrl">URL</label><input type="text" class="form-input" id="bmUrl" placeholder="https://example.com"></div>
+            <div class="form-group">
+                <label class="form-label" for="bmDesc">Description</label>
+                <textarea class="form-input" id="bmDesc"></textarea>
+                <div class="form-hint">Add links with <code>[label](https://url)</code></div>
+            </div>
+            <div class="form-group"><label class="form-label" for="bmCat">Category</label><select class="form-select" id="bmCat"></select></div>
+            <label class="checkbox-row"><input type="checkbox" id="bmNewTab"> Open in new tab</label>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" data-action="close-modal" data-modal="bookmarkModal">Cancel</button>
+                <button class="btn btn-primary" data-action="save-bookmark">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category modal -->
+    <div class="modal" id="categoryModal">
+        <div class="modal-content">
+            <div class="modal-header" id="catTitle">New Category</div>
+            <div class="form-group"><label class="form-label" for="catName">Name</label><input type="text" class="form-input" id="catName"></div>
+            <div class="form-group">
+                <label class="form-label" for="catType">Type</label>
+                <select class="form-select" id="catType">
+                    <option value="links">Links</option>
+                    <option value="copy">Quick Copy</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="catIcon">Icon</label>
+                <div class="icon-preview"><i id="catIconPreview" class="ph ph-folder"></i><span class="form-hint">Pick below or type any name from phosphoricons.com</span></div>
+                <input type="text" class="form-input" id="catIcon" placeholder="e.g. folder">
+                <div class="icon-grid" id="iconGrid"></div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="catEmoji">Emoji</label>
+                <input type="text" class="form-input" id="catEmoji" placeholder="e.g. 📁">
+                <div class="form-hint">Used when Icon style is set to Emoji in Settings. Press Win + . to open the emoji picker.</div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Color</label>
+                <div class="color-row" id="colorRow"></div>
+                <div class="form-hint">Used when Icon style is set to Colorful in Settings.</div>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" data-action="close-modal" data-modal="categoryModal">Cancel</button>
+                <button class="btn btn-primary" data-action="save-cat">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Copy row modal -->
+    <div class="modal" id="copyModal">
+        <div class="modal-content">
+            <div class="modal-header" id="cpTitle">Add Quick Copy</div>
+            <div class="form-group"><label class="form-label" for="cpLabel">Label</label><input type="text" class="form-input" id="cpLabel"></div>
+            <div class="form-group"><label class="form-label" for="cpValue">Value</label><input type="text" class="form-input" id="cpValue"></div>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" data-action="close-modal" data-modal="copyModal">Cancel</button>
+                <button class="btn btn-primary" data-action="save-copy">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header"><i class="ph ph-gear"></i> Settings</div>
+            <div class="settings-section">
+                <div class="settings-section-title">Appearance</div>
+                <div class="form-group">
+                    <label class="form-label">Theme</label>
+                    <!-- Filled from THEMES by renderThemeRow() so CSS and swatches can't drift apart -->
+                    <div class="theme-row" id="themeRow"></div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="setIconStyle">Icon style</label>
+                    <select class="form-select" id="setIconStyle">
+                        <option value="colorful">Colorful (duotone icon on a white chip)</option>
+                        <option value="simple">Simple (white icon)</option>
+                        <option value="emoji">Emoji</option>
+                        <option value="none">None</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="setHeadingFont">Heading font (title &amp; category names)</label>
+                    <select class="form-select" id="setHeadingFont"></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="setBodyFont">Body font</label>
+                    <select class="form-select" id="setBodyFont"></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="setDescLayout">Bookmark descriptions</label>
+                    <select class="form-select" id="setDescLayout">
+                        <option value="inline">Inline</option>
+                        <option value="below">Below the name</option>
+                        <option value="none">None</option>
+                    </select>
+                </div>
+                <label class="checkbox-row"><input type="checkbox" id="setFavicons"> Show site favicons next to links</label>
+                <div class="form-hint">Favicons are fetched from Google's favicon service, so each bookmark's domain is sent to Google.</div>
+            </div>
+            <div class="settings-section">
+                <div class="settings-section-title">Header</div>
+                <div class="form-group">
+                    <label class="checkbox-row"><input type="checkbox" id="setShowTitle"> Show title</label>
+                    <label class="checkbox-row"><input type="checkbox" id="setShowTime"> Show date &amp; time</label>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="setHeader">Header text (also the browser tab title)</label>
+                    <input type="text" class="form-input" id="setHeader">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="setDateFmt">Date &amp; time format (leave blank to hide)</label>
+                    <input type="text" class="form-input" id="setDateFmt" placeholder="dddd, MMMM D, YYYY h:mm A">
+                    <div class="form-hint">
+                        <b>YYYY</b>=2026 <b>YY</b>=26 <b>MMMM</b>=November <b>MMM</b>=Nov <b>MM</b>=11 <b>M</b>=11
+                        <b>DD</b>=09 <b>D</b>=9 <b>dddd</b>=Monday <b>ddd</b>=Mon <b>dd</b>=Mo
+                        <b>HH</b>=14 <b>hh</b>=02 <b>h</b>=2 <b>mm</b>=05 <b>ss</b>=09 <b>A</b>=PM <b>a</b>=pm<br>
+                        Wrap plain words in brackets so they aren't read as codes, e.g. <code>dddd [at] h:mm A</code>
+                    </div>
+                    <div class="format-preview" id="datePreview"></div>
+                </div>
+            </div>
+            <div class="settings-section">
+                <div class="settings-section-title">Backup</div>
+                <div class="modal-buttons" style="margin-top:0">
+                    <button class="btn btn-secondary" data-action="export"><i class="ph ph-download-simple"></i>Export JSON</button>
+                    <button class="btn btn-secondary" data-action="import"><i class="ph ph-upload-simple"></i>Import JSON</button>
+                </div>
+                <input type="file" id="importFile" accept=".json" style="display:none">
+                <div class="form-hint">Bookmarks are saved in this browser only. Export regularly to keep a backup.</div>
+            </div>
+            <div class="settings-section">
+                <div class="settings-section-title">Reset</div>
+                <button class="btn btn-danger" style="width:100%" data-action="reset"><i class="ph ph-arrow-counter-clockwise"></i>Reset to defaults</button>
+                <div class="form-hint">Replaces all bookmarks with the starter set (Email &amp; Social).</div>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" data-action="close-modal" data-modal="settingsModal">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ============ STORAGE KEYS ============ */
+        // Distinct from launchpage.html's hp_* keys so the two pages never overwrite each other.
+        const DATA_KEY = 'nm_data';
+        const SETTINGS_KEY = 'nm_settings';
+
+        /* ============ DEFAULT DATA (starter set) ============ */
+        // Used on first load and by "Reset to defaults". Inline description links use [label](url).
+        const DEFAULT_DATA = {
+            categories: [
+                {
+                    name: 'Email', icon: 'envelope', emoji: '✉️', color: '#C2255C', type: 'links', open: true, items: [
+                        { name: 'Apple Mail', url: 'https://www.icloud.com/mail', desc: 'iCloud Mail on the web.', newTab: true },
+                        { name: 'Gmail', url: 'https://mail.google.com/', desc: 'Google email.', newTab: true },
+                        { name: 'Outlook', url: 'https://outlook.live.com/mail/', desc: 'Microsoft email.', newTab: true }
+                    ]
+                },
+                {
+                    name: 'Social', icon: 'thumbs-up', emoji: '👍', color: '#1C7ED6', type: 'links', open: true, items: [
+                        { name: 'Bluesky', url: 'https://bsky.app/', desc: 'Decentralized social network.', newTab: true },
+                        { name: 'Facebook', url: 'https://www.facebook.com/', desc: 'Friends & family.', newTab: true },
+                        { name: 'Instagram', url: 'https://www.instagram.com/', desc: 'Photos & reels.', newTab: true },
+                        { name: 'LinkedIn', url: 'https://www.linkedin.com/', desc: 'Professional network.', newTab: true },
+                        { name: 'YouTube', url: 'https://www.youtube.com/', desc: 'Video sharing site.', newTab: true },
+                        { name: 'X', url: 'https://x.com/', desc: 'Formerly Twitter.', newTab: true }
+                    ]
+                }
+            ]
+        };
+
+        /*
+         * Preset category colors. Also the fallback for categories saved before colors existed:
+         * they get PALETTE[index].
+         */
+        const PALETTE = ['#E8590C', '#C2255C', '#2F9E44', '#6741D9', '#0C8599', '#E03131',
+            '#F59F00', '#AE3EC9', '#1C7ED6', '#495057', '#66A80F', '#9C6644'];
+
+        /**
+         * Resolve a category's color, falling back to the palette for older saved data.
+         * @param {object} cat - Category object.
+         * @param {number} ci - Category index (used only for the fallback).
+         * @returns {string} CSS color.
+         */
+        function catColor(cat, ci) {
+            return cat.color || PALETTE[ci % PALETTE.length];
+        }
+
+        /**
+         * Resolve a category's emoji. Categories saved before emojis existed have no `emoji` field,
+         * so fall back to ICON_EMOJI by icon name, then to a generic folder.
+         * @param {object} cat - Category object.
+         * @returns {string} Emoji text.
+         */
+        function catEmoji(cat) {
+            return cat.emoji || ICON_EMOJI[cat.icon] || '📁';
+        }
+
+        /* Emojis for the icons the earlier, larger default set used, so data saved from it still gets emojis. */
+        const ICON_EMOJI = {
+            'fire': '🔥', 'envelope': '✉️', 'chart-line-up': '📈', 'wrench': '🔧', 'archive': '🗄️', 'flag': '🚩',
+            'sparkle': '✨', 'smiley-wink': '😉', 'thumbs-up': '👍', 'newspaper': '📰', 'shopping-cart': '🛒',
+            'clipboard-text': '📋'
+        };
+
+        /* Curated starter icons for the picker; any Phosphor name can still be typed in. */
+        const ICONS = ['fire', 'star', 'heart', 'bookmark-simple', 'bookmarks', 'house', 'briefcase', 'folder', 'folder-open',
+            'archive', 'file-text', 'files', 'clipboard-text', 'envelope', 'chat-circle', 'users', 'user', 'user-circle',
+            'chart-line-up', 'chart-bar', 'chart-pie', 'table', 'database', 'cloud', 'globe', 'link', 'code',
+            'terminal-window', 'git-branch', 'github-logo', 'wrench', 'toolbox', 'hammer', 'gear', 'lightning', 'plug',
+            'power', 'lightbulb', 'sparkle', 'brain', 'robot', 'graduation-cap', 'book-open', 'books', 'notebook',
+            'pencil-simple', 'flag', 'calendar', 'clock', 'bell', 'lock', 'key', 'shield-check', 'money', 'credit-card',
+            'bank', 'shopping-cart', 'newspaper', 'thumbs-up', 'smiley-wink', 'map-pin', 'airplane', 'car', 'buildings',
+            'factory', 'thermometer', 'drop', 'sun', 'moon', 'cloud-sun', 'leaf', 'music-notes', 'guitar', 'film-strip',
+            'game-controller', 'football', 'youtube-logo', 'linkedin-logo', 'reddit-logo', 'coffee', 'pizza', 'desktop',
+            'laptop', 'device-mobile', 'magnifying-glass', 'rocket', 'trophy', 'target', 'gift', 'first-aid', 'heartbeat'];
+
+        /* ============ STATE ============ */
+        let data;                          // { categories: [...] } — array keeps category order explicit
+        let settings = {
+            theme: 'blue',
+            iconStyle: 'colorful',
+            favicons: false,                        // off by default: it sends every bookmark's domain to Google
+            headerText: "Chris's Bookmarks",
+            headingFont: 'system',
+            bodyFont: 'system',
+            descLayout: 'inline',                   // 'inline', 'below' or 'none'
+            showTitle: true,
+            showTime: true,
+            dateFmt: 'dddd, MMMM D, YYYY h:mm A'    // '' hides the date/time line
+        };
+        let editMode = false;              // not persisted: page always opens in clean reading view
+        let editTarget = null;             // { ci, ii } for the open modal; ii === null means "add new"
+        let drag = null;                   // { ci, ii } of the bookmark currently being dragged
+
+        /**
+         * Deep-copy plain JSON data so DEFAULT_DATA is never mutated by edits.
+         * @param {object} obj - JSON-serializable value.
+         * @returns {object} An independent copy.
+         */
+        function clone(obj) {
+            return JSON.parse(JSON.stringify(obj));
+        }
+
+        /**
+         * Load bookmarks and settings from localStorage, falling back to the seed data.
+         * Wrapped in try/catch because storage can be blocked or hold corrupt JSON.
+         * @returns {void}
+         */
+        function load() {
+            try {
+                const raw = localStorage.getItem(DATA_KEY);
+                data = raw ? JSON.parse(raw) : clone(DEFAULT_DATA);
+            } catch (e) {
+                data = clone(DEFAULT_DATA);
+            }
+            try {
+                const raw = localStorage.getItem(SETTINGS_KEY);
+                if (raw) Object.assign(settings, JSON.parse(raw));
+            } catch (e) { /* keep default settings */ }
+        }
+
+        /**
+         * Persist bookmarks and settings. Called after every change so nothing is lost on close.
+         * @returns {void}
+         */
+        function save() {
+            try {
+                localStorage.setItem(DATA_KEY, JSON.stringify(data));
+                localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+            } catch (e) {
+                console.error('Could not save to localStorage:', e);
+            }
+        }
+
+        /**
+         * Escape text for safe insertion into HTML (content or quoted attributes).
+         * @param {string} str - Raw user text.
+         * @returns {string} HTML-escaped text.
+         */
+        function esc(str) {
+            return String(str ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+
+        /**
+         * Render a description: escape everything first, then turn only [label](url) into links.
+         * Escaping first means a description can never inject arbitrary HTML.
+         * @param {string} text - Description text with optional [label](url) links.
+         * @returns {string} Safe HTML.
+         */
+        function linkify(text) {
+            return esc(text).replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+        }
+
+        /* ============ RENDERING ============ */
+
+        /**
+         * Rebuild the whole category grid from `data`. Full re-render keeps the DOM and the
+         * data indices (data-ci / data-ii) in sync after any add, delete, or reorder.
+         * @returns {void}
+         */
+        function render() {
+            const root = document.getElementById('categories');
+            root.innerHTML = data.categories.map(renderCategory).join('') +
+                (editMode ? '<div class="add-category-tile" data-action="add-cat"><i class="ph ph-plus-circle"></i>Add Category</div>' : '');
+            document.body.classList.toggle('editing', editMode);
+            document.getElementById('editToggle').classList.toggle('active', editMode);
+            applySearch();
+        }
+
+        /**
+         * Build one category card (header + collapsible content).
+         * @param {object} cat - Category object from data.categories.
+         * @param {number} ci - Index of the category in data.categories.
+         * @returns {string} HTML for the card.
+         */
+        function renderCategory(cat, ci) {
+            const last = data.categories.length - 1;
+            // Edit buttons are only rendered in edit mode so the normal view matches bookmarks.html.
+            // They carry their own data-action, which wins over the header's "toggle" in the click handler.
+            const actions = editMode ? `
+                <button class="icon-btn" data-action="cat-up" data-ci="${ci}" title="Move up" ${ci === 0 ? 'disabled' : ''}><i class="ph ph-caret-up"></i></button>
+                <button class="icon-btn" data-action="cat-down" data-ci="${ci}" title="Move down" ${ci === last ? 'disabled' : ''}><i class="ph ph-caret-down"></i></button>
+                <button class="icon-btn" data-action="edit-cat" data-ci="${ci}" title="Edit category"><i class="ph ph-pencil-simple"></i></button>
+                <button class="icon-btn danger" data-action="del-cat" data-ci="${ci}" title="Delete category"><i class="ph ph-trash"></i></button>
+                <button class="icon-btn" data-action="add-item" data-ci="${ci}" title="Add"><i class="ph ph-plus"></i></button>` : '';
+
+            let body;
+            if (!cat.items.length) {
+                body = '<p class="empty-hint">Nothing here yet.</p>';
+            } else if (cat.type === 'copy') {
+                body = cat.items.map((it, ii) => renderCopyRow(it, ci, ii)).join('');
+            } else {
+                body = `<ul class="bookmark-list">${cat.items.map((it, ii) => renderBookmark(it, ci, ii)).join('')}</ul>`;
+            }
+
+            return `<div class="category" data-ci="${ci}">
+                <div class="category-header${cat.open ? ' active' : ''}" data-action="toggle" data-ci="${ci}">
+                    <span class="cat-title">${renderCatIcon(cat, ci)}${esc(cat.name)}</span>
+                    <span class="cat-right">${actions}<span class="collapse-icon-chevron"></span></span>
+                </div>
+                <div class="category-content${cat.open ? ' open' : ''}">${body}</div>
+            </div>`;
+        }
+
+        /**
+         * Build a category's header icon in the chosen Icon style.
+         * @param {object} cat - Category object.
+         * @param {number} ci - Category index (for the color fallback).
+         * @returns {string} Icon HTML.
+         */
+        function renderCatIcon(cat, ci) {
+            if (settings.iconStyle === 'none') return ''; // title text only
+            if (settings.iconStyle === 'emoji') return `<span class="category-icon category-emoji">${esc(catEmoji(cat))}</span>`;
+            if (settings.iconStyle === 'simple') return `<i class="ph ph-${esc(cat.icon)} category-icon"></i>`;
+            return `<span class="chip"><i class="ph-duotone ph-${esc(cat.icon)} category-icon" style="color:${esc(catColor(cat, ci))}"></i></span>`;
+        }
+
+        /**
+         * Build the optional favicon <img> for a bookmark URL.
+         * Only http(s) URLs have a domain to look up; file:/// paths and relative links
+         * (e.g. launchpage.html) get nothing rather than a broken image.
+         * @param {string} url - Bookmark URL.
+         * @returns {string} <img> HTML, or '' when favicons are off or there is no domain.
+         */
+        function renderFavicon(url) {
+            if (!settings.favicons) return '';
+            let host;
+            try {
+                const u = new URL(url);
+                if (!u.protocol.startsWith('http')) return '';
+                host = u.hostname;
+            } catch (e) {
+                return ''; // relative or empty URL
+            }
+            // onerror hides the icon if the service has nothing for this domain
+            return `<img class="favicon" src="https://www.google.com/s2/favicons?domain=${encodeURIComponent(host)}&sz=32" alt="" onerror="this.style.display='none'">`;
+        }
+
+        /**
+         * Build one bookmark list item.
+         * @param {{name:string,url:string,desc:string,newTab:boolean}} b - Bookmark.
+         * @param {number} ci - Category index.
+         * @param {number} ii - Item index within the category.
+         * @returns {string} HTML for the <li>.
+         */
+        function renderBookmark(b, ci, ii) {
+            const target = b.newTab ? ' target="_blank" rel="noopener"' : '';
+            // In edit mode the <a> must not be natively draggable, otherwise Firefox drags the link
+            // instead of the list item.
+            const dragAttr = editMode ? ' draggable="false"' : '';
+            // A bookmark without a URL renders as plain text instead of an <a href=""> that reloads this page.
+            const title = b.url
+                ? `<a href="${esc(b.url)}" class="bookmark-link"${target}${dragAttr}>${esc(b.name)}</a>`
+                : `<span class="bookmark-link">${esc(b.name)}</span>`;
+            const actions = editMode ? `<span class="item-actions">
+                <button class="icon-btn" data-action="edit-item" data-ci="${ci}" data-ii="${ii}" title="Edit"><i class="ph ph-pencil-simple"></i></button>
+                <button class="icon-btn danger" data-action="del-item" data-ci="${ci}" data-ii="${ii}" title="Delete"><i class="ph ph-trash"></i></button>
+            </span>` : '';
+            return `<li class="bookmark-item" data-ci="${ci}" data-ii="${ii}"${editMode ? ' draggable="true"' : ''}>
+                ${renderFavicon(b.url)}${title}<p class="bookmark-description">${linkify(b.desc)}</p>${actions}</li>`;
+        }
+
+        /**
+         * Build one Quick Copy row (label, clickable value, Copy button).
+         * @param {{label:string,value:string}} row - Quick Copy entry.
+         * @param {number} ci - Category index.
+         * @param {number} ii - Row index within the category.
+         * @returns {string} HTML for the row.
+         */
+        function renderCopyRow(row, ci, ii) {
+            const actions = editMode ? `<span class="item-actions">
+                <button class="icon-btn" data-action="edit-item" data-ci="${ci}" data-ii="${ii}" title="Edit"><i class="ph ph-pencil-simple"></i></button>
+                <button class="icon-btn danger" data-action="del-item" data-ci="${ci}" data-ii="${ii}" title="Delete"><i class="ph ph-trash"></i></button>
+            </span>` : '';
+            return `<div class="quick-copy-item">
+                <span class="copy-label">${esc(row.label)}</span>
+                <span class="copy-value" data-action="copy" data-ci="${ci}" data-ii="${ii}">${esc(row.value)}</span>
+                <button class="copy-btn" data-action="copy" data-ci="${ci}" data-ii="${ii}">Copy</button>${actions}
+            </div>`;
+        }
+
+        /* ============ THEME ============ */
+
+        /*
+         * Every theme, in swatch order. `id` must match a body.theme-<id> CSS block (blue has none: it's
+         * the :root default). `bg`/`accent` only paint the swatch, which shows both halves so themes that
+         * share an accent hue (e.g. Sand vs. Thanksgiving) are still distinguishable.
+         */
+        const THEMES = [
+            { id: 'blue', title: 'Blue', bg: '#f7f9fc', accent: '#1F77B2' },
+            { id: 'green', title: 'Green', bg: '#f7f9fc', accent: '#2E8B57' },
+            { id: 'sand', title: 'Sand', bg: '#e9e0cf', accent: '#5e7d7a' },
+            { id: 'dark', title: 'Dark', bg: '#15191f', accent: '#1B5E8C' },
+            { id: 'midnight', title: 'Midnight', bg: '#0d1321', accent: '#2a5d7c' },
+            { id: 'newyear', title: "New Year's", bg: '#0e0e10', accent: '#c9a43a' },
+            { id: 'valentine', title: "Valentine's Day", bg: '#fdf0f3', accent: '#d6336c' },
+            { id: 'easter', title: 'Easter', bg: '#f3f0fa', accent: '#9775c9' },
+            { id: 'july4', title: 'Fourth of July', bg: '#1b2a57', accent: '#b22234' },
+            { id: 'halloween', title: 'Halloween', bg: '#120d14', accent: '#c2560b' },
+            { id: 'thanksgiving', title: 'Thanksgiving', bg: '#f5ead9', accent: '#b5541c' },
+            { id: 'christmas', title: 'Christmas', bg: '#a61e2b', accent: '#1d6b3a' }
+        ];
+
+        /*
+         * Font choices for the Heading/Body font settings. `body: false` marks display fonts that are fine
+         * at heading size but hard to read in paragraphs, so they're left out of the Body list.
+         * Web fonts load from the Google Fonts <link>; Cascadia Code and Consolas ship with Windows 11.
+         */
+        const FONTS = [
+            { id: 'system', label: 'Segoe UI (default)', stack: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", body: true },
+            { id: 'georgia', label: 'Georgia', stack: "Georgia, 'Times New Roman', serif", body: true },
+            { id: 'quicksand', label: 'Quicksand', stack: "'Quicksand', sans-serif", body: true },
+            { id: 'bitter', label: 'Bitter', stack: "'Bitter', Georgia, serif", body: true },
+            { id: 'playfair', label: 'Playfair Display', stack: "'Playfair Display', Georgia, serif", body: false },
+            { id: 'oswald', label: 'Oswald', stack: "'Oswald', sans-serif", body: false },
+            { id: 'dancing', label: 'Dancing Script', stack: "'Dancing Script', cursive", body: false },
+            { id: 'creepster', label: 'Creepster', stack: "'Creepster', cursive", body: false },
+            { id: 'christmas', label: 'Mountains of Christmas', stack: "'Mountains of Christmas', cursive", body: false },
+            // All-caps display faces: they have no real lowercase, so they're heading-only.
+            { id: 'bebas', label: 'Bebas Neue', stack: "'Bebas Neue', Impact, sans-serif", body: false },
+            { id: 'marker', label: 'Permanent Marker', stack: "'Permanent Marker', cursive", body: false },
+            { id: 'bungee', label: 'Bungee', stack: "'Bungee', Impact, sans-serif", body: false },
+            { id: 'cinzel', label: 'Cinzel', stack: "'Cinzel', Georgia, serif", body: false },
+            { id: 'jetbrains', label: 'JetBrains Mono', stack: "'JetBrains Mono', Consolas, monospace", body: true },
+            { id: 'fira', label: 'Fira Code', stack: "'Fira Code', Consolas, monospace", body: true },
+            { id: 'plex', label: 'IBM Plex Mono', stack: "'IBM Plex Mono', Consolas, monospace", body: true },
+            { id: 'noto', label: 'Noto Sans Mono (successor to Droid Sans Mono)', stack: "'Noto Sans Mono', 'Droid Sans Mono', Consolas, monospace", body: true },
+            { id: 'cascadia', label: 'Cascadia Code (Windows)', stack: "'Cascadia Code', 'Cascadia Mono', Consolas, monospace", body: true },
+            { id: 'consolas', label: 'Consolas (Windows)', stack: "Consolas, 'Andale Mono', monospace", body: true }
+        ];
+
+        /**
+         * Fill the Heading and Body font dropdowns from FONTS, alphabetized by label.
+         * Sorting here (not in FONTS itself) keeps FONTS[0] as the system-font fallback in applyFonts().
+         * Each option is styled in its own font so the list previews the faces (supported by Firefox's native dropdown).
+         * @returns {void}
+         */
+        function renderFontOptions() {
+            const sorted = [...FONTS].sort((a, b) => a.label.localeCompare(b.label));
+            const opts = list => list.map(f => `<option value="${f.id}" style="font-family:${esc(f.stack)}">${esc(f.label)}</option>`).join('');
+            document.getElementById('setHeadingFont').innerHTML = opts(sorted);
+            document.getElementById('setBodyFont').innerHTML = opts(sorted.filter(f => f.body));
+        }
+
+        /**
+         * Apply the chosen fonts by overriding the CSS variables on <body>.
+         * Unknown ids (e.g. a font removed from FONTS later) fall back to the system font.
+         * @returns {void}
+         */
+        function applyFonts() {
+            const stack = id => (FONTS.find(f => f.id === id) || FONTS[0]).stack;
+            document.body.style.setProperty('--heading-font', stack(settings.headingFont));
+            document.body.style.setProperty('--body-font', stack(settings.bodyFont));
+            // The closed dropdowns show the current choice in its own face too, not just the open list.
+            document.getElementById('setHeadingFont').style.fontFamily = stack(settings.headingFont);
+            document.getElementById('setBodyFont').style.fontFamily = stack(settings.bodyFont);
+        }
+
+        /**
+         * Apply the description layout. A body class (not a re-render) is enough because it's pure CSS.
+         * @returns {void}
+         */
+        function applyDescLayout() {
+            document.body.classList.toggle('desc-below', settings.descLayout === 'below');
+            document.body.classList.toggle('desc-none', settings.descLayout === 'none');
+        }
+
+        /**
+         * Draw one swatch per theme in the Settings modal. Each is split diagonally: background / accent.
+         * @returns {void}
+         */
+        function renderThemeRow() {
+            document.getElementById('themeRow').innerHTML = THEMES
+                .map(t => `<button class="theme-swatch" data-action="set-theme" data-theme="${t.id}" title="${esc(t.title)}" style="background:linear-gradient(135deg, ${t.bg} 50%, ${t.accent} 50%)"></button>`)
+                .join('');
+        }
+
+        /**
+         * Apply the saved theme to <body> and highlight its swatch. Blue is the default (no class),
+         * so any unknown value, e.g. 'light' saved by the earlier version of this page, falls back to blue.
+         * @returns {void}
+         */
+        function applyTheme() {
+            const active = THEMES.some(t => t.id === settings.theme) ? settings.theme : 'blue';
+            THEMES.forEach(t => document.body.classList.toggle('theme-' + t.id, t.id === active && t.id !== 'blue'));
+            document.querySelectorAll('.theme-swatch').forEach(s => s.classList.toggle('active', s.dataset.theme === active));
+        }
+
+        /* ============ HEADER & DATE/TIME (format tokens ported from launchpage.html) ============ */
+        const DAYS_FULL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const DAYS_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const DAYS_MIN = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+        const MONTHS_FULL = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        const MONTHS_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+        /**
+         * Format a date using launchpage-style tokens (YYYY, MMMM, dddd, h, mm, A, ...).
+         * A single regex pass, longest tokens first, means replaced text is never re-scanned,
+         * so e.g. the "M" in "March" can't be treated as a month token.
+         * @param {string} fmt - Format string.
+         * @param {Date} [d=new Date()] - Date to format.
+         * @returns {string} Formatted date.
+         */
+        function formatDate(fmt, d = new Date()) {
+            const y = d.getFullYear(), mo = d.getMonth(), day = d.getDate(), dow = d.getDay();
+            const H = d.getHours(), m = d.getMinutes(), s = d.getSeconds();
+            const h12 = H % 12 || 12, ampm = H >= 12 ? 'PM' : 'AM';
+            const pad = n => String(n).padStart(2, '0');
+            const tokens = {
+                YYYY: y, YY: String(y).slice(-2), MMMM: MONTHS_FULL[mo], MMM: MONTHS_SHORT[mo], MM: pad(mo + 1), M: mo + 1,
+                dddd: DAYS_FULL[dow], ddd: DAYS_SHORT[dow], dd: DAYS_MIN[dow], DD: pad(day), D: day,
+                HH: pad(H), hh: pad(h12), h: h12, mm: pad(m), ss: pad(s), A: ampm, a: ampm.toLowerCase()
+            };
+            // [literal text] is passed through unchanged, so words like "at" aren't read as tokens ("a" = am/pm).
+            return fmt.replace(/\[([^\]]*)\]|YYYY|YY|MMMM|MMM|MM|M|dddd|ddd|dd|DD|D|HH|hh|h|mm|ss|A|a/g,
+                (t, literal) => literal !== undefined ? literal : tokens[t]);
+        }
+
+        /**
+         * Apply header text (page heading + tab title) and refresh the date/time line.
+         * Called once a second by the clock timer, and whenever header settings change.
+         * @returns {void}
+         */
+        function applyHeader() {
+            document.getElementById('headerText').textContent = settings.headerText;
+            document.title = settings.headerText || 'Bookmarks';
+            // Hiding the title keeps the tab title, so the tab is still labeled.
+            document.getElementById('pageTitle').hidden = !settings.showTitle;
+            // textContent '' triggers .header-time:empty, which hides the line entirely
+            document.getElementById('currentTime').textContent = settings.showTime && settings.dateFmt ? formatDate(settings.dateFmt) : '';
+            document.getElementById('datePreview').textContent = settings.dateFmt ? formatDate(settings.dateFmt) : '(hidden)';
+        }
+
+        /* ============ SEARCH (same behavior as bookmarks.html) ============ */
+
+        /**
+         * Filter bookmarks by the search box, opening categories with matches and hiding
+         * categories with none. Runs after every render so filtering survives edits.
+         * @returns {void}
+         */
+        function applySearch() {
+            const term = document.getElementById('search-input').value.trim().toLowerCase();
+            document.querySelectorAll('.category').forEach(cat => {
+                let visible = 0;
+                cat.querySelectorAll('.bookmark-item').forEach(item => {
+                    const match = !term || item.textContent.toLowerCase().includes(term);
+                    item.style.display = match ? '' : 'none';
+                    if (match) visible++;
+                });
+                // Opening for a search is visual only; it isn't saved as the category's open state.
+                if (term && visible) {
+                    cat.querySelector('.category-header').classList.add('active');
+                    cat.querySelector('.category-content').classList.add('open');
+                }
+                cat.style.display = term && !visible ? 'none' : '';
+            });
+        }
+
+        /* ============ CLIPBOARD (ported from bookmarks.html) ============ */
+
+        /**
+         * Copy text and briefly flash the clicked element green as feedback.
+         * Falls back to execCommand when the async Clipboard API is unavailable.
+         * @param {string} text - Value to copy.
+         * @param {HTMLElement} element - Element that was clicked (value span or Copy button).
+         * @returns {void}
+         */
+        function copyToClipboard(text, element) {
+            const flash = () => {
+                element.classList.add('copy-success');
+                if (element.classList.contains('copy-btn')) element.textContent = 'Copied!';
+                setTimeout(() => {
+                    element.classList.remove('copy-success');
+                    if (element.classList.contains('copy-btn')) element.textContent = 'Copy';
+                }, 1000);
+            };
+            const fallback = () => {
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                flash();
+            };
+            if (navigator.clipboard) navigator.clipboard.writeText(text).then(flash).catch(fallback);
+            else fallback();
+        }
+
+        /* ============ MODALS ============ */
+
+        /**
+         * Show a modal by id.
+         * @param {string} id - Modal element id.
+         * @returns {void}
+         */
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+
+        /**
+         * Hide a modal by id.
+         * @param {string} id - Modal element id.
+         * @returns {void}
+         */
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        /**
+         * Open the bookmark modal for adding (ii === null) or editing an existing bookmark.
+         * @param {number} ci - Category index the bookmark belongs to / is added to.
+         * @param {number|null} ii - Item index to edit, or null to add.
+         * @returns {void}
+         */
+        function openBookmarkModal(ci, ii) {
+            editTarget = { ci, ii };
+            const b = ii === null ? { name: '', url: '', desc: '', newTab: true } : data.categories[ci].items[ii];
+            document.getElementById('bmTitle').textContent = ii === null ? 'Add Bookmark' : 'Edit Bookmark';
+            document.getElementById('bmName').value = b.name;
+            document.getElementById('bmUrl').value = b.url;
+            document.getElementById('bmDesc').value = b.desc;
+            document.getElementById('bmNewTab').checked = !!b.newTab;
+            // Only "links" categories are valid destinations; Quick Copy holds a different item shape.
+            document.getElementById('bmCat').innerHTML = data.categories
+                .map((c, i) => c.type === 'links' ? `<option value="${i}"${i === ci ? ' selected' : ''}>${esc(c.name)}</option>` : '')
+                .join('');
+            openModal('bookmarkModal');
+            document.getElementById('bmName').focus();
+        }
+
+        /**
+         * Save the bookmark modal. If the category was changed while editing, the bookmark moves.
+         * URL may be blank (renders as plain text instead of a link).
+         * @returns {void}
+         */
+        function saveBookmark() {
+            const item = {
+                name: document.getElementById('bmName').value.trim(),
+                url: document.getElementById('bmUrl').value.trim(),
+                desc: document.getElementById('bmDesc').value.trim(),
+                newTab: document.getElementById('bmNewTab').checked
+            };
+            if (!item.name) { alert('Please enter a name.'); return; }
+            const dest = +document.getElementById('bmCat').value;
+            const { ci, ii } = editTarget;
+            if (ii === null) {
+                data.categories[dest].items.push(item);
+            } else if (dest === ci) {
+                data.categories[ci].items[ii] = item;
+            } else {
+                data.categories[ci].items.splice(ii, 1);
+                data.categories[dest].items.push(item);
+            }
+            save(); render(); closeModal('bookmarkModal');
+        }
+
+        /**
+         * Open the Quick Copy row modal for adding (ii === null) or editing a row.
+         * @param {number} ci - Quick Copy category index.
+         * @param {number|null} ii - Row index to edit, or null to add.
+         * @returns {void}
+         */
+        function openCopyModal(ci, ii) {
+            editTarget = { ci, ii };
+            const row = ii === null ? { label: '', value: '' } : data.categories[ci].items[ii];
+            document.getElementById('cpTitle').textContent = ii === null ? 'Add Quick Copy' : 'Edit Quick Copy';
+            document.getElementById('cpLabel').value = row.label;
+            document.getElementById('cpValue').value = row.value;
+            openModal('copyModal');
+            document.getElementById('cpLabel').focus();
+        }
+
+        /**
+         * Save the Quick Copy row modal.
+         * @returns {void}
+         */
+        function saveCopyRow() {
+            const row = {
+                label: document.getElementById('cpLabel').value.trim(),
+                value: document.getElementById('cpValue').value.trim()
+            };
+            if (!row.label || !row.value) { alert('Please fill in both label and value.'); return; }
+            const { ci, ii } = editTarget;
+            if (ii === null) data.categories[ci].items.push(row);
+            else data.categories[ci].items[ii] = row;
+            save(); render(); closeModal('copyModal');
+        }
+
+        /**
+         * Open the category modal for a new category (ci === null) or to edit one.
+         * Type is locked when editing because links and copy rows have different shapes.
+         * @param {number|null} ci - Category index to edit, or null to add.
+         * @returns {void}
+         */
+        function openCategoryModal(ci) {
+            editTarget = { ci, ii: null };
+            const cat = ci === null ? { name: '', icon: 'folder', type: 'links' } : data.categories[ci];
+            document.getElementById('catTitle').textContent = ci === null ? 'New Category' : 'Edit Category';
+            document.getElementById('catName').value = cat.name;
+            document.getElementById('catType').value = cat.type;
+            document.getElementById('catType').disabled = ci !== null;
+            document.getElementById('catIcon').value = cat.icon;
+            // New categories start blank so catEmoji() picks the fallback until one is chosen.
+            document.getElementById('catEmoji').value = ci === null ? '' : catEmoji(cat);
+            updateIconPicker();
+            // New categories get the palette color for their position, so colors vary as you add more.
+            renderColorRow(ci === null ? PALETTE[data.categories.length % PALETTE.length] : catColor(cat, ci));
+            openModal('categoryModal');
+            document.getElementById('catName').focus();
+        }
+
+        /**
+         * Refresh the icon preview and filter the icon grid by whatever is typed in the icon box.
+         * The typed text doubles as the selected value, so any Phosphor name works, not just the curated ones.
+         * @returns {void}
+         */
+        function updateIconPicker() {
+            const value = document.getElementById('catIcon').value.trim().toLowerCase();
+            document.getElementById('catIconPreview').className = 'ph ph-' + (value || 'folder');
+            // Show the full list when the value is an exact pick, so you can still browse after choosing.
+            const filter = ICONS.includes(value) ? '' : value;
+            document.getElementById('iconGrid').innerHTML = ICONS
+                .filter(name => name.includes(filter))
+                .map(name => `<span class="icon-option${name === value ? ' selected' : ''}" data-action="pick-icon" data-icon="${name}" title="${name}"><i class="ph ph-${name}"></i></span>`)
+                .join('');
+        }
+
+        /**
+         * Draw the preset color swatches plus a native color input for custom colors.
+         * The native input holds the current value, so saveCategory() reads from one place.
+         * @param {string} selected - Currently selected color (hex).
+         * @returns {void}
+         */
+        function renderColorRow(selected) {
+            const sel = selected.toLowerCase();
+            document.getElementById('colorRow').innerHTML = PALETTE
+                .map(c => `<button class="color-swatch${c.toLowerCase() === sel ? ' selected' : ''}" data-action="pick-color" data-color="${c}" title="${c}" style="background:${c}"></button>`)
+                .join('') + `<input type="color" id="catColor" value="${esc(sel)}" title="Custom color">`;
+        }
+
+        /**
+         * Save the category modal (create or update).
+         * @returns {void}
+         */
+        function saveCategory() {
+            const name = document.getElementById('catName').value.trim();
+            const icon = document.getElementById('catIcon').value.trim().toLowerCase() || 'folder';
+            const color = document.getElementById('catColor').value;
+            const emoji = document.getElementById('catEmoji').value.trim() || '📁';
+            if (!name) { alert('Please enter a category name.'); return; }
+            const { ci } = editTarget;
+            if (ci === null) {
+                data.categories.push({ name, icon, emoji, color, type: document.getElementById('catType').value, open: true, items: [] });
+            } else {
+                Object.assign(data.categories[ci], { name, icon, emoji, color });
+            }
+            save(); render(); closeModal('categoryModal');
+        }
+
+        /* ============ IMPORT / EXPORT ============ */
+
+        /**
+         * Download all bookmarks and settings as a dated JSON backup file.
+         * @returns {void}
+         */
+        function exportAll() {
+            const blob = new Blob([JSON.stringify({ version: 1, data, settings }, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'newmarks-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+            a.click();
+            URL.revokeObjectURL(a.href);
+        }
+
+        /**
+         * Replace current data with a previously exported JSON file.
+         * @param {File} file - The selected .json file.
+         * @returns {void}
+         */
+        function importAll(file) {
+            const reader = new FileReader();
+            reader.onload = ev => {
+                try {
+                    const parsed = JSON.parse(ev.target.result);
+                    // Validate the one thing render() depends on before overwriting anything.
+                    if (!Array.isArray(parsed?.data?.categories)) throw new Error('no "data.categories" list found');
+                    data = parsed.data;
+                    if (parsed.settings) Object.assign(settings, parsed.settings);
+                    save(); applyTheme(); render(); closeModal('settingsModal');
+                    alert('Import successful!');
+                } catch (err) {
+                    alert('Invalid backup file: ' + err.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        /* ============ EVENT WIRING ============ */
+
+        // One delegated click handler. closest('[data-action]') returns the innermost action, so a
+        // button inside a category header runs its own action instead of collapsing the header.
+        document.addEventListener('click', e => {
+            const el = e.target.closest('[data-action]');
+            if (!el) return;
+            const ci = el.dataset.ci === undefined ? null : +el.dataset.ci;
+            const ii = el.dataset.ii === undefined ? null : +el.dataset.ii;
+            const cats = data.categories;
+
+            switch (el.dataset.action) {
+                case 'toggle': {
+                    // Toggle classes directly (not a re-render) so the CSS slide animation plays.
+                    const open = !cats[ci].open;
+                    cats[ci].open = open;
+                    el.classList.toggle('active', open);
+                    el.nextElementSibling.classList.toggle('open', open);
+                    save();
+                    break;
+                }
+                case 'cat-up':
+                case 'cat-down': {
+                    const to = el.dataset.action === 'cat-up' ? ci - 1 : ci + 1;
+                    // Guard the ends: some browsers still deliver clicks from the icon inside a disabled button.
+                    if (to < 0 || to >= cats.length) break;
+                    [cats[ci], cats[to]] = [cats[to], cats[ci]];
+                    save(); render();
+                    break;
+                }
+                case 'edit-cat': openCategoryModal(ci); break;
+                case 'add-cat': openCategoryModal(null); break;
+                case 'del-cat':
+                    if (confirm(`Delete "${cats[ci].name}" and everything in it?`)) { cats.splice(ci, 1); save(); render(); }
+                    break;
+                case 'add-item':
+                    cats[ci].type === 'copy' ? openCopyModal(ci, null) : openBookmarkModal(ci, null);
+                    break;
+                case 'edit-item':
+                    cats[ci].type === 'copy' ? openCopyModal(ci, ii) : openBookmarkModal(ci, ii);
+                    break;
+                case 'del-item': {
+                    const it = cats[ci].items[ii];
+                    if (confirm(`Delete "${it.name || it.label}"?`)) { cats[ci].items.splice(ii, 1); save(); render(); }
+                    break;
+                }
+                case 'copy': copyToClipboard(cats[ci].items[ii].value, el); break;
+                case 'pick-icon':
+                    document.getElementById('catIcon').value = el.dataset.icon;
+                    updateIconPicker();
+                    break;
+                case 'pick-color': renderColorRow(el.dataset.color); break;
+                case 'save-bookmark': saveBookmark(); break;
+                case 'save-copy': saveCopyRow(); break;
+                case 'save-cat': saveCategory(); break;
+                case 'close-modal': closeModal(el.dataset.modal); break;
+                case 'toggle-edit': editMode = !editMode; render(); break;
+                case 'set-theme':
+                    settings.theme = el.dataset.theme;
+                    applyTheme(); save();
+                    break;
+                case 'open-settings':
+                    document.getElementById('setIconStyle').value = settings.iconStyle;
+                    document.getElementById('setFavicons').checked = settings.favicons;
+                    document.getElementById('setHeadingFont').value = settings.headingFont;
+                    document.getElementById('setBodyFont').value = settings.bodyFont;
+                    document.getElementById('setDescLayout').value = settings.descLayout;
+                    document.getElementById('setShowTitle').checked = settings.showTitle;
+                    document.getElementById('setShowTime').checked = settings.showTime;
+                    document.getElementById('setHeader').value = settings.headerText;
+                    document.getElementById('setDateFmt').value = settings.dateFmt;
+                    openModal('settingsModal');
+                    break;
+                case 'export': exportAll(); break;
+                case 'import': document.getElementById('importFile').click(); break;
+                case 'reset':
+                    if (confirm('Replace ALL bookmarks with the defaults? Export first if you want a backup.')) {
+                        data = clone(DEFAULT_DATA); save(); render(); closeModal('settingsModal');
+                    }
+                    break;
+            }
+        });
+
+        // Clicking the dimmed backdrop (not the dialog itself) closes a modal, as in launchpage.html.
+        document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e => {
+            if (e.target === m) closeModal(m.id);
+        }));
+
+        document.getElementById('importFile').addEventListener('change', e => {
+            if (e.target.files[0]) importAll(e.target.files[0]);
+            e.target.value = ''; // allow re-importing the same file
+        });
+
+        document.getElementById('catIcon').addEventListener('input', updateIconPicker);
+
+        // Icon style applies immediately (no Save button) so you can compare looks with the modal open.
+        document.getElementById('setIconStyle').addEventListener('change', e => {
+            settings.iconStyle = e.target.value;
+            save(); render();
+        });
+
+        document.getElementById('setFavicons').addEventListener('change', e => {
+            settings.favicons = e.target.checked;
+            save(); render();
+        });
+
+        // Fonts apply immediately, like Icon style, so you can compare with the modal open.
+        document.getElementById('setHeadingFont').addEventListener('change', e => {
+            settings.headingFont = e.target.value;
+            save(); applyFonts();
+        });
+        document.getElementById('setBodyFont').addEventListener('change', e => {
+            settings.bodyFont = e.target.value;
+            save(); applyFonts();
+        });
+
+        document.getElementById('setDescLayout').addEventListener('change', e => {
+            settings.descLayout = e.target.value;
+            save(); applyDescLayout();
+        });
+
+        document.getElementById('setShowTitle').addEventListener('change', e => {
+            settings.showTitle = e.target.checked;
+            save(); applyHeader();
+        });
+        document.getElementById('setShowTime').addEventListener('change', e => {
+            settings.showTime = e.target.checked;
+            save(); applyHeader();
+        });
+
+        // Header settings update live as you type, so the page header doubles as the preview.
+        document.getElementById('setHeader').addEventListener('input', e => {
+            settings.headerText = e.target.value.trim();
+            save(); applyHeader();
+        });
+        document.getElementById('setDateFmt').addEventListener('input', e => {
+            settings.dateFmt = e.target.value.trim();
+            save(); applyHeader();
+        });
+
+        // Picking a custom color should un-highlight the preset swatches.
+        document.getElementById('colorRow').addEventListener('input', e => {
+            if (e.target.id === 'catColor') document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
+        });
+        document.getElementById('search-input').addEventListener('input', applySearch);
+
+        /* ---------- Drag & drop reordering (edit mode only; adapted from launchpage.html) ---------- */
+        const grid = document.getElementById('categories');
+
+        /**
+         * Remove all drop-position indicator lines.
+         * @returns {void}
+         */
+        function clearDragMarks() {
+            grid.querySelectorAll('.drag-above, .drag-below').forEach(x => x.classList.remove('drag-above', 'drag-below'));
+        }
+
+        grid.addEventListener('dragstart', e => {
+            const li = e.target.closest('.bookmark-item');
+            if (!li) return;
+            drag = { ci: +li.dataset.ci, ii: +li.dataset.ii };
+            li.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', ''); // Firefox won't start a drag without setData
+        });
+
+        grid.addEventListener('dragend', e => {
+            e.target.classList?.remove('dragging');
+            clearDragMarks();
+            drag = null;
+        });
+
+        grid.addEventListener('dragover', e => {
+            if (!drag) return;
+            const cat = e.target.closest('.category');
+            if (!cat || data.categories[+cat.dataset.ci].type !== 'links') return; // no drop target => not allowed
+            e.preventDefault();
+            clearDragMarks();
+            const li = e.target.closest('.bookmark-item');
+            if (li) {
+                const r = li.getBoundingClientRect();
+                li.classList.add(e.clientY < r.top + r.height / 2 ? 'drag-above' : 'drag-below');
+            }
+        });
+
+        grid.addEventListener('drop', e => {
+            if (!drag) return;
+            e.preventDefault();
+            const cat = e.target.closest('.category');
+            const dest = +cat.dataset.ci;
+            const li = e.target.closest('.bookmark-item');
+            const [moved] = data.categories[drag.ci].items.splice(drag.ii, 1);
+            const items = data.categories[dest].items;
+            if (li) {
+                const ti = +li.dataset.ii;
+                const r = li.getBoundingClientRect();
+                let ins = e.clientY < r.top + r.height / 2 ? ti : ti + 1;
+                // Removing the source earlier in the same list shifts the target index down by one.
+                if (drag.ci === dest && drag.ii < ins) ins--;
+                items.splice(ins, 0, moved);
+            } else {
+                items.push(moved); // dropped on the card but not on an item: append to the end
+            }
+            drag = null;
+            save(); render();
+        });
+
+        /* ============ INIT ============ */
+        load();
+        renderThemeRow(); // before applyTheme(), which highlights the active swatch
+        applyTheme();
+        renderFontOptions();
+        applyFonts();
+        applyDescLayout();
+        applyHeader();
+        render();
+        setInterval(applyHeader, 1000); // keep the clock (and seconds, if used) current
+    </script>
+</body>
+
+</html>
