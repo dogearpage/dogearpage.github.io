@@ -222,6 +222,7 @@
         .page-footer { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 0 20px; }
         .footer-actions { display: flex; gap: 20px; }
         .footer-note { color: var(--muted); font-size: 13px; margin: 0; }
+        .footer-note a { color: var(--link, var(--accent)); }
 
         .footer-link {
             /* Reset so <button> looks like a plain text link */
@@ -623,7 +624,7 @@
             <button class="footer-link" id="editToggle" data-action="toggle-edit" title="Toggle edit mode"><i class="ph ph-pencil-simple"></i>Edit</button>
             <button class="footer-link" data-action="open-settings" title="Settings"><i class="ph ph-gear"></i>Settings</button>
         </div>
-        <p class="footer-note">All data is stored locally in your browser.</p>
+        <p class="footer-note">All data is stored locally in your browser. · <a href="https://github.com/dogearpage/dogearpage.github.io/blob/main/LICENSE">MIT License</a> · <a href="https://github.com/dogearpage/dogearpage.github.io">Source on GitHub</a></p>
     </footer>
 
     <!-- Bookmark modal: shared by "add" and "edit" so the form only exists once -->

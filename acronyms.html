@@ -258,6 +258,7 @@
         /* One row: Settings on the left, storage note on the right */
         .page-footer { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 0 20px; }
         .footer-note { color: var(--muted); font-size: 13px; margin: 0; }
+        .footer-note a { color: var(--link, var(--accent)); }
 
         .footer-link {
             background: none;
@@ -385,7 +386,7 @@
 
     <footer class="page-footer">
         <button class="footer-link" id="settingsBtn" title="Settings"><i class="ph ph-gear"></i>Settings</button>
-        <p class="footer-note">All data is stored locally in your browser.</p>
+        <p class="footer-note">All data is stored locally in your browser. · <a href="https://github.com/dogearpage/dogearpage.github.io/blob/main/LICENSE">MIT License</a> · <a href="https://github.com/dogearpage/dogearpage.github.io">Source on GitHub</a></p>
     </footer>
 
     <!-- Settings modal: only the settings that apply to this page. They're shared with newmarks.html. -->
