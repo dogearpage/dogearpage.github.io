@@ -217,8 +217,8 @@
         .theme-swatch:hover { transform: scale(1.15); }
         .theme-swatch.active { border-color: var(--text); box-shadow: 0 0 0 2px var(--input-border); }
 
-        /* ---------- Footer (Edit & Settings) ---------- */
-        /* One row: Edit & Settings grouped on the left, storage note on the right */
+        /* ---------- Footer (Edit, Settings & How To) ---------- */
+        /* One row: Edit, Settings & How To grouped on the left, storage note on the right */
         .page-footer { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 0 20px; }
         .footer-actions { display: flex; gap: 20px; }
         .footer-note { color: var(--muted); font-size: 13px; margin: 0; }
@@ -228,6 +228,8 @@
             /* Reset so <button> looks like a plain text link */
             background: none;
             border: none;
+            /* How To is an <a>; drop the underline so it matches the buttons */
+            text-decoration: none;
             font: inherit;
             font-size: 14px;
             color: var(--muted);
@@ -605,7 +607,6 @@
     <div class="nav-header">
         <a href="index.html" class="nav-link active">Bookmarks</a>
         <a href="acronyms.html" class="nav-link">Acronyms</a>
-        <a href="how-to/use.html" class="nav-link">How To</a>
     </div>
 
     <div class="container">
@@ -623,6 +624,7 @@
         <div class="footer-actions">
             <button class="footer-link" id="editToggle" data-action="toggle-edit" title="Toggle edit mode"><i class="ph ph-pencil-simple"></i>Edit</button>
             <button class="footer-link" data-action="open-settings" title="Settings"><i class="ph ph-gear"></i>Settings</button>
+            <a href="how-to/use.html" class="footer-link" title="How To"><i class="ph ph-question"></i>How To</a>
         </div>
         <p class="footer-note">All data is stored locally in your browser. · <a href="https://github.com/dogearpage/dogearpage.github.io/blob/main/LICENSE"><i class="ph ph-scales"></i> License</a> · <a href="https://github.com/dogearpage/dogearpage.github.io"><i class="ph ph-github-logo"></i> Source</a></p>
     </footer>
