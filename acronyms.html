@@ -86,6 +86,21 @@
             --chip-bg: #faf4e9;
         }
 
+        /* Warm paper: off-white paper with charcoal text and a muted brown accent */
+        body.theme-paper {
+            --bg: #FAF7F0; --surface: #fffdf8; --text: #2B2B2B; --heading: #2B2B2B;
+            --muted: #857c6e; --desc: #6e665a; --accent: #8a5a3b; --accent-hover: #714a30;
+            --border: #ece6da; --input-bg: #fffdf8; --input-border: #ddd5c6; --copy-hover: #f3e9df;
+            --chip-bg: #fffdf8;
+        }
+
+        /* Cool slate: blue-gray page with near-black slate text and a steel-blue accent */
+        body.theme-slate {
+            --bg: #EEF1F5; --surface: #f8fafc; --text: #1F2933; --heading: #1F2933;
+            --muted: #7b8794; --desc: #616e7c; --accent: #3e6a8a; --accent-hover: #335771;
+            --border: #e1e6ec; --input-border: #cbd2d9; --copy-hover: #e3ecf3;
+        }
+
         /* Valentine's Day */
         body.theme-valentine {
             --bg: #fdf0f3; --surface: #fffafb; --text: #4a2a33; --heading: #7a1f3d;
@@ -128,14 +143,6 @@
             --bg: #f6f3ee; --surface: #fffdf9; --text: #2b2b2b; --heading: #a61e2b;
             --muted: #7c7a74; --desc: #67655f; --accent: #1d6b3a; --accent-hover: #17572f;
             --border: #ece6dc; --input-border: #ddd4c5; --copy-hover: #e6f1e9;
-        }
-
-        /* New Year's: black and gold */
-        body.theme-newyear {
-            --bg: #0e0e10; --surface: #1a1a1e; --text: #e4e1d8; --heading: #f1e6c4;
-            --muted: #8f8b80; --desc: #9a968b; --accent: #8a6d1f; --accent-hover: #715a19;
-            --border: #2c2b2f; --input-bg: #222226; --input-border: #3a393e; --copy-hover: #2f2a1c;
-            --shadow: rgba(0, 0, 0, 0.5); --chip-bg: #f3ecd8; --link: #e0bd5a;
         }
         * { box-sizing: border-box; }
 
@@ -330,8 +337,8 @@
 
 <body>
     <div class="nav-header">
-        <a href="newmarks.html" class="nav-link">Bookmarks</a>
-        <a href="new-acronyms.html" class="nav-link active">Acronyms</a>
+        <a href="index.html" class="nav-link">Bookmarks</a>
+        <a href="acronyms.html" class="nav-link active">Acronyms</a>
     </div>
 
     <div class="container">
@@ -465,17 +472,18 @@
          */
         const THEMES = [
             { id: 'blue', title: 'Blue', bg: '#f7f9fc', accent: '#1F77B2' },
+            { id: 'slate', title: 'Cool Slate', bg: '#EEF1F5', accent: '#3e6a8a' },
             { id: 'green', title: 'Green', bg: '#f7f9fc', accent: '#2E8B57' },
             { id: 'sand', title: 'Sand', bg: '#e9e0cf', accent: '#5e7d7a' },
+            { id: 'paper', title: 'Warm Paper', bg: '#FAF7F0', accent: '#8a5a3b' },
             { id: 'dark', title: 'Dark', bg: '#15191f', accent: '#1B5E8C' },
             { id: 'midnight', title: 'Midnight', bg: '#0d1321', accent: '#2a5d7c' },
-            { id: 'newyear', title: "New Year's", bg: '#0e0e10', accent: '#c9a43a' },
             { id: 'valentine', title: "Valentine's Day", bg: '#fdf0f3', accent: '#d6336c' },
             { id: 'easter', title: 'Easter', bg: '#f3f0fa', accent: '#9775c9' },
-            { id: 'july4', title: 'Fourth of July', bg: '#1b2a57', accent: '#b22234' },
+            { id: 'july4', title: 'Fourth of July', bg: '#f1f4fa', accent: '#b22234' },
             { id: 'halloween', title: 'Halloween', bg: '#120d14', accent: '#c2560b' },
             { id: 'thanksgiving', title: 'Thanksgiving', bg: '#f5ead9', accent: '#b5541c' },
-            { id: 'christmas', title: 'Christmas', bg: '#a61e2b', accent: '#1d6b3a' }
+            { id: 'christmas', title: 'Christmas', bg: '#f6f3ee', accent: '#1d6b3a' }
         ];
 
         /*
@@ -786,8 +794,12 @@
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
             a.download = 'acronyms.json';
+            // Firefox can ignore clicks on a link that isn't in the page, so attach it (as acronyms.html does).
+            document.body.appendChild(a);
             a.click();
-            URL.revokeObjectURL(a.href);
+            a.remove();
+            // Firefox starts the download asynchronously; revoking the URL right away can cancel it.
+            setTimeout(() => URL.revokeObjectURL(a.href), 1000);
             showStatus('Acronyms exported successfully!', 'success');
         }
 
