@@ -800,7 +800,7 @@
                     ]
                 },
                 {
-                    name: 'Social', icon: 'thumbs-up', emoji: '👍', color: '#1C7ED6', type: 'links', open: true, items: [
+                    name: 'Social', icon: 'thumbs-up', emoji: '👍', color: '#1C7ED6', type: 'links', open: false, items: [
                         { name: 'Bluesky', url: 'https://bsky.app/', desc: 'Decentralized social network.', newTab: true },
                         { name: 'Facebook', url: 'https://www.facebook.com/', desc: 'Friends & family.', newTab: true },
                         { name: 'Instagram', url: 'https://www.instagram.com/', desc: 'Photos & reels.', newTab: true },
@@ -810,11 +810,9 @@
                     ]
                 },
                 {
-                    name: 'Shopping', icon: 'shopping-cart', emoji: '🛒', color: '#2F9E44', type: 'links', open: true, items: [
-                        { name: 'Amazon', url: 'https://www.amazon.com/', desc: 'Online everything store.', newTab: true },
-                        { name: 'eBay', url: 'https://www.ebay.com/', desc: 'Online auctions & marketplace.', newTab: true },
-                        { name: 'Newegg', url: 'https://www.newegg.com/', desc: 'Computer parts & electronics.', newTab: true },
-                        { name: 'Walmart', url: 'https://www.walmart.com/', desc: 'Groceries & everyday essentials.', newTab: true }
+                    name: 'Quick Copy', icon: 'files', emoji: '📄', color: '#1c7ed6', type: 'copy', open: false, items: [
+                        { "label": "Email", "value": "me@example.com" },
+                        { "label": "Zoom", "value": "https://sample.zoom.us/j/8225123131?pwd=Zkk" }
                     ]
                 }
             ]
@@ -1472,7 +1470,7 @@
             const blob = new Blob([JSON.stringify({ version: 1, data, settings }, null, 2)], { type: 'application/json' });
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = 'newmarks-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+            a.download = 'dogearpage-backup-' + new Date().toISOString().slice(0, 10) + '.json';
             a.click();
             URL.revokeObjectURL(a.href);
         }
