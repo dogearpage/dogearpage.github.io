@@ -8,9 +8,9 @@ A personal start page you can make your own, right in the browser. Keep your fav
 
 | Page | What it does |
 |------|--------------|
-| **Bookmarks** (`index.html`) | Links grouped into collapsible categories, plus "Quick Copy" categories with one-click copy buttons. Search, in-page editing, drag-and-drop reordering, themes, fonts, a customizable greeting and clock, and JSON backup/restore. |
-| **Acronyms** (`acronyms.html`) | A searchable, sortable list of acronyms with definitions and categories. Add, edit, delete, and import/export as JSON. Shares the theme and fonts chosen on the Bookmarks page. |
-| **How To** (`how-to/`) | Help pages: [How to use](https://dogearpage.github.io/how-to/use.html), [Personalize](https://dogearpage.github.io/how-to/personalize.html) and [Make pull requests](https://dogearpage.github.io/how-to/contribute.html). They pick up the visitor's saved theme and fonts. |
+| **Bookmarks** | Links grouped into collapsible categories, plus "Quick Copy" categories with one-click copy buttons. Search, in-page editing, drag-and-drop reordering, themes, fonts, a customizable greeting and clock, and JSON backup/restore. |
+| **Acronyms** | A searchable, sortable list of acronyms with definitions and categories. Add, edit, delete, and import/export as JSON. Shares the theme and fonts chosen on the Bookmarks page. |
+| **How To** | Help pages: [How to use](https://dogearpage.github.io/how-to/use), [Personalize](https://dogearpage.github.io/how-to/personalize) and [Make pull requests](https://dogearpage.github.io/how-to/contribute). They pick up the visitor's saved theme and fonts. |
 
 ### Features
 
@@ -28,9 +28,9 @@ Open https://dogearpage.github.io, click **Edit** at the bottom of the page, and
 
 Step-by-step guides live on the site:
 
-- [How to use](https://dogearpage.github.io/how-to/use.html): add categories, links and Quick Copy rows, back up your data, and make your own copy with your own default links.
-- [Personalize](https://dogearpage.github.io/how-to/personalize.html): themes, icon styles, fonts, descriptions, header text and the date format codes.
-- [Make pull requests](https://dogearpage.github.io/how-to/contribute.html): how to suggest changes to this repository.
+- [How to use](https://dogearpage.github.io/how-to/use): add categories, links and Quick Copy rows, back up your data, and make your own copy with your own default links.
+- [Personalize](https://dogearpage.github.io/how-to/personalize): themes, icon styles, fonts, descriptions, header text and the date format codes.
+- [Make pull requests](https://dogearpage.github.io/how-to/contribute): how to suggest changes to this repository.
 
 > **Your data is per browser.** Links and settings are saved in the browser's local storage for this site. A different browser or device, a private window, or clearing site data starts from the starter set. Export a backup from **Settings → Backup**.
 
@@ -97,7 +97,7 @@ A fork is served at `https://YOUR-USERNAME.github.io/dogearpage.github.io/` unle
 
 ## Contributing
 
-Issues and pull requests are welcome. See [Make pull requests](https://dogearpage.github.io/how-to/contribute.html) for the step-by-step and the ground rules. In short:
+Issues and pull requests are welcome. See [Make pull requests](https://dogearpage.github.io/how-to/contribute) for the step-by-step and the ground rules. In short:
 
 - One change per pull request, with screenshots for anything visual.
 - Keep `index.html` and `acronyms.html` self-contained, with no build tools or frameworks.
