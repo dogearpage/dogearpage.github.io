@@ -1,0 +1,244 @@
+/*
+ * Shared styles for the How To pages (use.html, personalize.html, contribute.html).
+ *
+ * Why a shared file: the two app pages (index.html, acronyms.html) are deliberately self-contained,
+ * but these three help pages are identical in layout, so one stylesheet keeps them from drifting.
+ *
+ * The theme palettes below are copied verbatim from index.html so the help pages wear whatever
+ * theme the visitor picked in Settings. If a theme changes there, copy the change here too.
+ */
+:root {
+    --bg: #f7f9fc;
+    --surface: #ffffff;
+    --text: #333333;
+    --heading: #2c3e50;
+    --muted: #7f8c8d;
+    /* Bookmark descriptions: a shade darker than --muted for readability, still clearly gray */
+    --desc: #65737a;
+    /* Blue theme (default). Hover is the accent ~18% darker so the hover keeps the same hue. */
+    --accent: #1F77B2;
+    --accent-hover: #196292;
+    --border: #eeeeee;
+    --input-bg: #ffffff;
+    --input-border: #dddddd;
+    --copy-hover: #e7f1f8;
+    --shadow: rgba(0, 0, 0, 0.1);
+    --danger: #e74c3c;
+    --chip-bg: #ffffff;
+    /* Fonts are independent of themes: applyFonts() overrides these from the Heading/Body font settings */
+    --heading-font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --body-font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* --link is intentionally not set here: it's only defined by dark themes, and use sites
+       fall back to --accent. (A :root default would resolve before body themes override --accent.) */
+}
+
+/* Green theme only swaps the accent family; the neutral page colors stay the same as blue */
+body.theme-green {
+    --accent: #2E8B57;
+    --accent-hover: #267247;
+    --copy-hover: #e6f4ec;
+}
+
+body.theme-dark {
+    --bg: #15191f;
+    --surface: #1f252d;
+    --text: #d8dde3;
+    --heading: #e6ebf0;
+    --muted: #8f9aa5;
+    /* On a dark background "darker" would mean less readable, so keep the original muted tone */
+    --desc: #8f9aa5;
+    /* Muted version of #1F77B2 so the header bars don't glare against the dark surfaces */
+    --accent: #1B5E8C;
+    --accent-hover: #164C72;
+    --border: #2e3640;
+    --input-bg: #262d36;
+    --input-border: #3a434e;
+    --copy-hover: #2a3a4a;
+    --shadow: rgba(0, 0, 0, 0.4);
+    /* Off-white so the chips don't glare against the dark page */
+    --chip-bg: #e9ecef;
+    /* The muted accent is too dark to read as link text on dark surfaces */
+    --link: #5dade2;
+}
+
+/* Midnight: darker, cooler than Dark, with a teal accent */
+body.theme-midnight {
+    --bg: #0d1321; --surface: #161e2e; --text: #cdd6e4; --heading: #e2e9f3;
+    --muted: #7d8ba1; --desc: #8a97ab; --accent: #2a5d7c; --accent-hover: #234d66;
+    --border: #253146; --input-bg: #1b2436; --input-border: #2f3c53; --copy-hover: #1f3346;
+    --shadow: rgba(0, 0, 0, 0.5); --chip-bg: #dfe6ee; --link: #6cc4d8;
+}
+
+/* Sand: a light theme on warm beige instead of white, with a muted slate-teal accent */
+body.theme-sand {
+    --bg: #e9e0cf; --surface: #f4ecdd; --text: #3d3427; --heading: #4a3b28;
+    --muted: #8a7b66; --desc: #75684f; --accent: #5e7d7a; --accent-hover: #4d6764;
+    --border: #e2d6c1; --input-bg: #faf4e9; --input-border: #d6c7ac; --copy-hover: #e4e7dc;
+    --chip-bg: #faf4e9;
+}
+
+/* Warm paper: off-white paper with charcoal text and a muted brown accent */
+body.theme-paper {
+    --bg: #FAF7F0; --surface: #fffdf8; --text: #2B2B2B; --heading: #2B2B2B;
+    --muted: #857c6e; --desc: #6e665a; --accent: #8a5a3b; --accent-hover: #714a30;
+    --border: #ece6da; --input-bg: #fffdf8; --input-border: #ddd5c6; --copy-hover: #f3e9df;
+    --chip-bg: #fffdf8;
+}
+
+/* Cool slate: blue-gray page with near-black slate text and a steel-blue accent */
+body.theme-slate {
+    --bg: #EEF1F5; --surface: #f8fafc; --text: #1F2933; --heading: #1F2933;
+    --muted: #7b8794; --desc: #616e7c; --accent: #3e6a8a; --accent-hover: #335771;
+    --border: #e1e6ec; --input-border: #cbd2d9; --copy-hover: #e3ecf3;
+}
+
+/* Valentine's Day */
+body.theme-valentine {
+    --bg: #fdf0f3; --surface: #fffafb; --text: #4a2a33; --heading: #7a1f3d;
+    --muted: #a0707f; --desc: #8c6170; --accent: #d6336c; --accent-hover: #b02a59;
+    --border: #f6dde4; --input-border: #efc6d2; --copy-hover: #fbe3ea;
+}
+
+/* Easter: pastel lavender */
+body.theme-easter {
+    --bg: #f3f0fa; --surface: #fdfcff; --text: #3f3a52; --heading: #5b4a8a;
+    --muted: #8c86a3; --desc: #77718f; --accent: #9775c9; --accent-hover: #7d5fae;
+    --border: #ebe6f5; --input-border: #dcd3ee; --copy-hover: #efe8fa;
+}
+
+/* Fourth of July: red bars, navy text */
+body.theme-july4 {
+    --bg: #f1f4fa; --surface: #ffffff; --text: #1f2a44; --heading: #1b2a57;
+    --muted: #6b7591; --desc: #59627c; --accent: #b22234; --accent-hover: #921c2b;
+    --border: #e6e9f2; --input-border: #d3d8e6; --copy-hover: #fbe9eb;
+}
+
+/* Halloween: near-black purple with pumpkin orange */
+body.theme-halloween {
+    --bg: #120d14; --surface: #1e1720; --text: #e8dccf; --heading: #f2e6d8;
+    --muted: #9c8c80; --desc: #a39486; --accent: #c2560b; --accent-hover: #9f4609;
+    --border: #33283a; --input-bg: #261d29; --input-border: #403344; --copy-hover: #3a2618;
+    --shadow: rgba(0, 0, 0, 0.5); --chip-bg: #f1e7dc; --link: #ff9a3c;
+}
+
+/* Thanksgiving: harvest rust on cream */
+body.theme-thanksgiving {
+    --bg: #f5ead9; --surface: #fdf7ee; --text: #43301f; --heading: #6b3a14;
+    --muted: #97806a; --desc: #806a54; --accent: #b5541c; --accent-hover: #944516;
+    --border: #efe1cc; --input-bg: #fffaf2; --input-border: #e0cbab; --copy-hover: #f7e3cd;
+    --chip-bg: #fffaf2;
+}
+
+/* Christmas: evergreen bars, cranberry headings */
+body.theme-christmas {
+    --bg: #f6f3ee; --surface: #fffdf9; --text: #2b2b2b; --heading: #a61e2b;
+    --muted: #7c7a74; --desc: #67655f; --accent: #1d6b3a; --accent-hover: #17572f;
+    --border: #ece6dc; --input-border: #ddd4c5; --copy-hover: #e6f1e9;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    font-family: var(--body-font);
+    line-height: 1.6;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: var(--bg);
+    color: var(--text);
+}
+
+/* ---------- Navigation (same look as the app pages) ---------- */
+.nav-header {
+    background-color: var(--accent);
+    border-radius: 8px;
+    margin: 0 auto 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    padding: 10px 20px;
+}
+
+.nav-link {
+    color: white;
+    padding: 10px 15px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+    border-radius: 5px;
+    margin: 0 5px;
+}
+
+.nav-link:hover,
+.nav-link.active { background-color: var(--accent-hover); }
+.nav-link.active { font-weight: bold; }
+
+/* ---------- Tabs between the three How To pages ---------- */
+.howto-tabs { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin: 0 0 20px; }
+
+.howto-tab {
+    color: var(--link, var(--accent));
+    border: 1px solid var(--input-border);
+    background: var(--surface);
+    border-radius: 999px;
+    padding: 6px 16px;
+    text-decoration: none;
+    font-size: 15px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.howto-tab:hover { border-color: var(--accent); }
+.howto-tab.active { background: var(--accent); border-color: var(--accent); color: white; font-weight: bold; }
+
+/* ---------- Article ---------- */
+/* Narrower than the app pages: long lines of instructions are hard to read at 1200px. */
+.container {
+    background-color: var(--surface);
+    border-radius: 8px;
+    box-shadow: 0 2px 10px var(--shadow);
+    padding: 25px 35px;
+    margin: 0 auto 20px;
+    max-width: 860px;
+}
+
+h1, h2, h3 { color: var(--heading); font-family: var(--heading-font); line-height: 1.25; }
+h1 { text-align: center; margin: 0 0 10px; }
+h1 .ph { vertical-align: -4px; margin-right: 8px; }
+h2 { margin: 32px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+h3 { margin: 22px 0 6px; font-size: 1.1em; }
+
+.lead { text-align: center; color: var(--muted); margin: 0 0 24px; }
+
+a { color: var(--link, var(--accent)); }
+li { margin: 4px 0; }
+
+code, pre { font-family: 'Courier New', monospace; font-size: 0.92em; }
+code { background: var(--border); border-radius: 4px; padding: 1px 5px; }
+pre { background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 6px; padding: 12px 14px; overflow-x: auto; line-height: 1.45; }
+pre code { background: none; padding: 0; }
+
+/* On-screen button names, so readers can match the text to what they see */
+.ui { font-weight: 600; white-space: nowrap; }
+
+.note {
+    border-left: 4px solid var(--accent);
+    background: var(--copy-hover);
+    border-radius: 0 6px 6px 0;
+    padding: 10px 14px;
+    margin: 16px 0;
+}
+
+table { border-collapse: collapse; width: 100%; margin: 10px 0; font-size: 0.95em; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+th { color: var(--heading); }
+
+.page-footer { text-align: center; color: var(--muted); font-size: 13px; padding: 0 0 20px; }
+
+@media (max-width: 600px) {
+    .container { padding: 20px; }
+    .nav-header { padding: 8px 10px; }
+    .nav-link { padding: 8px 10px; margin: 0 2px; }
+}

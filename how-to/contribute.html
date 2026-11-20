@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Make pull requests · dogearpage</title>
+    <!-- Same pinned Phosphor version as the app pages -->
+    <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+    <!-- Same web fonts as the app pages, so a saved Heading/Body font shows here too -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bitter:wght@400;700&family=Bungee&family=Cinzel:wght@700&family=Creepster&family=Dancing+Script:wght@700&family=Fira+Code:wght@400;700&family=IBM+Plex+Mono:wght@400;700&family=JetBrains+Mono:wght@400;700&family=Mountains+of+Christmas:wght@700&family=Noto+Sans+Mono:wght@400;700&family=Oswald:wght@500&family=Permanent+Marker&family=Playfair+Display:wght@700&family=Quicksand:wght@400;700&display=swap">
+    <link rel="stylesheet" href="howto.css">
+</head>
+
+<body>
+    <div class="nav-header">
+        <a href="../index.html" class="nav-link">Bookmarks</a>
+        <a href="../acronyms.html" class="nav-link">Acronyms</a>
+        <a href="use.html" class="nav-link active">How To</a>
+    </div>
+
+    <nav class="howto-tabs">
+        <a href="use.html" class="howto-tab"><i class="ph ph-hand-pointing"></i>How to use</a>
+        <a href="personalize.html" class="howto-tab"><i class="ph ph-palette"></i>Personalize</a>
+        <a href="contribute.html" class="howto-tab active"><i class="ph ph-git-pull-request"></i>Make pull requests</a>
+    </nav>
+
+    <main class="container">
+        <h1><i class="ph ph-git-pull-request"></i>Make pull requests</h1>
+        <p class="lead">Found a bug, want a new theme or have an idea? Here's how to send it in.</p>
+
+        <div class="note">
+            This page is about changing the <em>site itself</em> for everyone. To change <em>your own</em> links or look,
+            you don't need GitHub at all; see <a href="use.html">How to use</a> and <a href="personalize.html">Personalize</a>.
+        </div>
+
+        <h2 id="before">Before you start</h2>
+        <ul>
+            <li>You need a free <a href="https://github.com/signup" target="_blank" rel="noopener">GitHub account</a>.</li>
+            <li>For anything bigger than a small fix, <a href="https://github.com/dogearpage/dogearpage.github.io/issues" target="_blank" rel="noopener">open an issue</a>
+                first describing what you'd like to change. It saves you work if the idea needs adjusting.</li>
+            <li>Just reporting a problem? An issue on its own is perfect. Say what you did, what you expected and what happened,
+                and which browser you used.</li>
+        </ul>
+
+        <h2 id="web">Option A: entirely on github.com (easiest)</h2>
+        <p>Good for text fixes, a new theme color or other small, single-file changes.</p>
+        <ol>
+            <li>Open the file you want to change in <a href="https://github.com/dogearpage/dogearpage.github.io" target="_blank" rel="noopener">the repository</a>,
+                for example <code>index.html</code>.</li>
+            <li>Click the pencil <i class="ph ph-pencil-simple"></i> <b>Edit this file</b> button. GitHub offers to fork the repository
+                (make your own copy); accept.</li>
+            <li>Make your change in the editor.</li>
+            <li>Click <span class="ui">Commit changes…</span>, write a short message that says what changed (e.g. "Add Spring theme"),
+                then <span class="ui">Propose changes</span>.</li>
+            <li>On the next screen, click <span class="ui">Create pull request</span>. Describe what you changed and why, and add a
+                screenshot if it changes how the page looks. Submit it.</li>
+        </ol>
+
+        <h2 id="git">Option B: on your computer with Git</h2>
+        <p>Better for bigger changes, several files, or when you want to try things in your browser before sending them.</p>
+        <ol>
+            <li>On GitHub, click <span class="ui">Fork</span> on the repository page.</li>
+            <li>Clone your fork and create a branch for your change:
+<pre><code>git clone https://github.com/YOUR-USERNAME/dogearpage.github.io.git
+cd dogearpage.github.io
+git checkout -b add-spring-theme</code></pre></li>
+            <li>Edit the files, then open <code>index.html</code> straight in your browser to test (double-click it; there's no
+                build step or server needed). Check both pages and a light and dark theme.</li>
+            <li>Commit and push:
+<pre><code>git add .
+git commit -m "Add Spring theme"
+git push -u origin add-spring-theme</code></pre></li>
+            <li>Back on GitHub, your fork shows a <span class="ui">Compare &amp; pull request</span> banner. Click it, describe the
+                change and submit.</li>
+        </ol>
+        <p>
+            If the original repository moves on while you're working, bring your branch up to date with GitHub's
+            <span class="ui">Sync fork</span> button, or from the command line:
+        </p>
+<pre><code>git remote add upstream https://github.com/dogearpage/dogearpage.github.io.git
+git fetch upstream
+git rebase upstream/main</code></pre>
+
+        <h2 id="guidelines">Guidelines that get pull requests merged</h2>
+        <ul>
+            <li><b>One change per pull request.</b> A new theme and a bug fix are two pull requests.</li>
+            <li><b>Keep the pages self-contained.</b> <code>index.html</code> and <code>acronyms.html</code> each carry their own styles
+                and script on purpose, with no build tools or frameworks. Please keep it that way.</li>
+            <li><b>Keep everything in the browser.</b> The site never sends people's links anywhere. Changes that add tracking,
+                accounts or a server won't be accepted.</li>
+            <li><b>Themes and fonts live in several places.</b> They're copied in <code>index.html</code>, <code>acronyms.html</code>,
+                <code>how-to/howto.css</code> and <code>how-to/howto.js</code>. If you add or change one, update all of them.</li>
+            <li><b>Don't break saved data.</b> People's links are stored under the keys <code>nm_data</code>, <code>nm_settings</code>
+                and <code>acronyms</code>. If you change the shape of that data, make the page still read what's already saved.</li>
+            <li><b>Explain the why.</b> Match the existing style: comments that explain <em>why</em> code does something, and a short
+                doc comment on each function.</li>
+            <li><b>Show it.</b> For visual changes, include before and after screenshots in the pull request.</li>
+        </ul>
+
+        <h2 id="after">After you submit</h2>
+        <p>
+            The maintainer reviews it and may ask questions or suggest changes; push more commits to the same branch and the
+            pull request updates itself. Once it's merged, GitHub Pages republishes the site within a few minutes.
+           
+        </p>
+    </main>
+
+    <footer class="page-footer">dogearpage · <a href="https://github.com/dogearpage/dogearpage.github.io">Source on GitHub</a></footer>
+
+    <script src="howto.js"></script>
+</body>
+
+</html>

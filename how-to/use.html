@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to use · dogearpage</title>
+    <!-- Same pinned Phosphor version as the app pages -->
+    <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+    <!-- Same web fonts as the app pages, so a saved Heading/Body font shows here too -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bitter:wght@400;700&family=Bungee&family=Cinzel:wght@700&family=Creepster&family=Dancing+Script:wght@700&family=Fira+Code:wght@400;700&family=IBM+Plex+Mono:wght@400;700&family=JetBrains+Mono:wght@400;700&family=Mountains+of+Christmas:wght@700&family=Noto+Sans+Mono:wght@400;700&family=Oswald:wght@500&family=Permanent+Marker&family=Playfair+Display:wght@700&family=Quicksand:wght@400;700&display=swap">
+    <link rel="stylesheet" href="howto.css">
+</head>
+
+<body>
+    <div class="nav-header">
+        <a href="../index.html" class="nav-link">Bookmarks</a>
+        <a href="../acronyms.html" class="nav-link">Acronyms</a>
+        <a href="use.html" class="nav-link active">How To</a>
+    </div>
+
+    <nav class="howto-tabs">
+        <a href="use.html" class="howto-tab active"><i class="ph ph-hand-pointing"></i>How to use</a>
+        <a href="personalize.html" class="howto-tab"><i class="ph ph-palette"></i>Personalize</a>
+        <a href="contribute.html" class="howto-tab"><i class="ph ph-git-pull-request"></i>Make pull requests</a>
+    </nav>
+
+    <main class="container">
+        <h1><i class="ph ph-hand-pointing"></i>How to use</h1>
+        <p class="lead">Replace the starter links with your own, right in the browser. No account, no install.</p>
+
+        <div class="note">
+            <b>Where your links live:</b> everything you add is saved in <em>this browser</em> on <em>this device</em>
+            (its local storage). Nothing is sent to a server, and nobody else who visits the site sees your links.
+            That also means a different browser, a different computer or clearing your browsing data starts you from
+            the starter set again, so use <a href="#backup">Export</a> to keep a backup.
+        </div>
+
+        <h2 id="edit-mode">1. Turn on Edit mode</h2>
+        <p>
+            Open the <a href="../index.html">Bookmarks</a> page and click <span class="ui"><i class="ph ph-pencil-simple"></i> Edit</span>
+            at the bottom of the page. Edit buttons appear on every category and link. Click
+            <span class="ui">Edit</span> again when you're done; the page always reopens in the clean reading view.
+        </p>
+
+        <h2 id="categories">2. Set up your categories</h2>
+        <p>The page starts with three categories (Email, Social, Shopping). Keep, change or delete them.</p>
+        <ul>
+            <li><b>Add one:</b> click the <span class="ui"><i class="ph ph-plus-circle"></i> Add Category</span> tile at the end of the list.</li>
+            <li><b>Change one:</b> click the pencil <i class="ph ph-pencil-simple"></i> on its header to rename it or change its icon, emoji or color.</li>
+            <li><b>Reorder:</b> use the up <i class="ph ph-caret-up"></i> and down <i class="ph ph-caret-down"></i> arrows on the header.</li>
+            <li><b>Delete:</b> click the trash can <i class="ph ph-trash"></i>. This removes the category <em>and every link in it</em>.</li>
+        </ul>
+        <p>When adding a category you choose its <b>Type</b>:</p>
+        <table>
+            <tr><th>Type</th><th>Holds</th><th>Good for</th></tr>
+            <tr><td>Links</td><td>Bookmarks that open a web page</td><td>Sites you visit often</td></tr>
+            <tr><td>Quick Copy</td><td>A label and a value with a <span class="ui">Copy</span> button</td><td>Text you paste a lot: an address, an account number, a canned reply</td></tr>
+        </table>
+        <p>The type can't be changed after the category is created, so pick the one you need up front.</p>
+        <p>
+            For the icon, pick one from the grid or type any icon name from
+            <a href="https://phosphoricons.com" target="_blank" rel="noopener">phosphoricons.com</a> (for example <code>airplane</code>).
+            The emoji and color fields are used by the <a href="personalize.html#icons">icon styles</a> in Settings.
+        </p>
+
+        <h2 id="links">3. Add your links</h2>
+        <ol>
+            <li>Click the plus <i class="ph ph-plus"></i> on the header of the category you want.</li>
+            <li>Fill in <b>Name</b> and <b>URL</b> (include the <code>https://</code>).</li>
+            <li>Optionally add a <b>Description</b>. You can put links inside it with <code>[label](https://url)</code>,
+                for example <code>Team wiki, see also [the FAQ](https://example.com/faq)</code>.</li>
+            <li>Tick <b>Open in new tab</b> if you want the link to leave this page open.</li>
+            <li>Click <span class="ui">Save</span>.</li>
+        </ol>
+        <p>
+            To change a link, click its pencil <i class="ph ph-pencil-simple"></i>; you can also move it to a different category from
+            the <b>Category</b> dropdown there. Click the trash can <i class="ph ph-trash"></i> to delete it. While Edit mode is on you can also
+            drag a link to reorder it, or drop it onto another Links category to move it there.
+        </p>
+        <p>Quick Copy categories work the same way, except each row has a <b>Label</b> and a <b>Value</b>. Click the value or its <span class="ui">Copy</span> button to copy it.</p>
+
+        <h2 id="search">4. Find things fast</h2>
+        <p>Type in the search box at the top of the Bookmarks page to filter your links as you type.</p>
+
+        <h2 id="backup">5. Back up, move or share your links</h2>
+        <p>Open <span class="ui"><i class="ph ph-gear"></i> Settings</span> (bottom of the Bookmarks page) and use the <b>Backup</b> section:</p>
+        <ul>
+            <li><span class="ui">Export JSON</span> downloads all your categories, links and settings as a file named like <code>newmarks-backup-2026-11-19.json</code>.</li>
+            <li><span class="ui">Import JSON</span> loads such a file. Use it to restore a backup, or to bring your links to another browser or computer.
+                Importing <em>replaces</em> the bookmarks you have now (it doesn't add to them), so export first if you want to keep them.</li>
+        </ul>
+        <p>
+            <b>Start over:</b> <span class="ui">Reset to defaults</span> in Settings replaces <em>all</em> your bookmarks with the starter set.
+            Export first if there's anything you want to keep.
+        </p>
+
+        <h2 id="acronyms">6. The Acronyms page</h2>
+        <p>
+            The <a href="../acronyms.html">Acronyms</a> page is a separate list for the jargon in your life. Type an acronym,
+            its definition and an optional category, then click <span class="ui">Add</span>. Search, sort by any column, edit or
+            delete entries, and use <span class="ui">Export</span> / <span class="ui">Import</span> to back the list up. Unlike bookmarks, importing acronyms
+            <em>adds</em> to your list and skips any acronym you already have. The list is stored
+            separately from your bookmarks, so resetting one never touches the other.
+        </p>
+
+        <h2 id="own-copy">7. Optional: your own copy of the site</h2>
+        <p>
+            Everything above works on <a href="https://dogearpage.github.io">dogearpage.github.io</a> as is. If you'd rather have
+            your own address, or want <em>your</em> links to be the starter set anyone sees on first visit, make your own copy:
+        </p>
+        <ol>
+            <li>Sign in to GitHub and open <a href="https://github.com/dogearpage/dogearpage.github.io" target="_blank" rel="noopener">the repository</a>.</li>
+            <li>Click <span class="ui">Fork</span> to copy it to your account.</li>
+            <li>In your fork, open <code>index.html</code>, click the pencil <i class="ph ph-pencil-simple"></i> to edit it, and find <code>DEFAULT_DATA</code>.
+                Replace the starter categories and links with yours, following the same pattern:
+<pre><code>{
+    name: 'News', icon: 'newspaper', emoji: '📰', color: '#1C7ED6', type: 'links', open: true, items: [
+        { name: 'AP News', url: 'https://apnews.com/', desc: 'Wire service.', newTab: true }
+    ]
+},</code></pre>
+                Commit the change.</li>
+            <li>In your fork go to <span class="ui">Settings → Pages</span>, set <b>Source</b> to <b>Deploy from a branch</b>,
+                pick <code>main</code> and <code>/ (root)</code>, and save. After a minute or two your copy is live at
+                <code>https://YOUR-USERNAME.github.io/dogearpage.github.io/</code>. (Rename the fork to
+                <code>YOUR-USERNAME.github.io</code> if you want it at the shorter address.)</li>
+        </ol>
+        <div class="note">
+            The starter set is only used the first time a browser opens the page (or after <span class="ui">Reset to defaults</span>).
+            A browser that already has saved links keeps them, so to see your new defaults in your own browser, export a backup
+            and then click <span class="ui">Reset to defaults</span>.
+        </div>
+        <p>Next: <a href="personalize.html">make it look the way you like →</a></p>
+    </main>
+
+    <footer class="page-footer">dogearpage · <a href="https://github.com/dogearpage/dogearpage.github.io">Source on GitHub</a></footer>
+
+    <script src="howto.js"></script>
+</body>
+
+</html>

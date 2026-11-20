@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personalize · dogearpage</title>
+    <!-- Same pinned Phosphor version as the app pages -->
+    <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+    <!-- Same web fonts as the app pages, so a saved Heading/Body font shows here too -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bitter:wght@400;700&family=Bungee&family=Cinzel:wght@700&family=Creepster&family=Dancing+Script:wght@700&family=Fira+Code:wght@400;700&family=IBM+Plex+Mono:wght@400;700&family=JetBrains+Mono:wght@400;700&family=Mountains+of+Christmas:wght@700&family=Noto+Sans+Mono:wght@400;700&family=Oswald:wght@500&family=Permanent+Marker&family=Playfair+Display:wght@700&family=Quicksand:wght@400;700&display=swap">
+    <link rel="stylesheet" href="howto.css">
+    <style>
+        /* Page-only: a small split dot like the Settings swatches, so readers recognize each theme */
+        .dot { display: inline-block; width: 16px; height: 16px; border-radius: 50%; border: 1px solid var(--input-border); vertical-align: -3px; margin-right: 6px; }
+    </style>
+</head>
+
+<body>
+    <div class="nav-header">
+        <a href="../index.html" class="nav-link">Bookmarks</a>
+        <a href="../acronyms.html" class="nav-link">Acronyms</a>
+        <a href="use.html" class="nav-link active">How To</a>
+    </div>
+
+    <nav class="howto-tabs">
+        <a href="use.html" class="howto-tab"><i class="ph ph-hand-pointing"></i>How to use</a>
+        <a href="personalize.html" class="howto-tab active"><i class="ph ph-palette"></i>Personalize</a>
+        <a href="contribute.html" class="howto-tab"><i class="ph ph-git-pull-request"></i>Make pull requests</a>
+    </nav>
+
+    <main class="container">
+        <h1><i class="ph ph-palette"></i>Personalize</h1>
+        <p class="lead">Pick a theme, fonts and display options. Takes about a minute.</p>
+
+        <h2 id="open">Open Settings</h2>
+        <p>
+            Click <span class="ui"><i class="ph ph-gear"></i> Settings</span> at the bottom of the <a href="../index.html">Bookmarks</a> page.
+            Every change applies the moment you make it, so you can try things and watch the page behind the window. Click
+            <span class="ui">Close</span> when you're happy.
+        </p>
+        <div class="note">
+            Theme and fonts are shared: set them on either the Bookmarks or the Acronyms page and both pages (and these help pages)
+            follow. Like your links, settings are saved in this browser only.
+        </div>
+
+        <h2 id="theme">Theme</h2>
+        <p>Click a swatch. Each one shows the theme's background (top-left half) and accent color (bottom-right half).</p>
+        <table>
+            <tr><th>Everyday</th><th>Dark</th><th>Holidays</th></tr>
+            <tr>
+                <td>
+                    <span class="dot" style="background:linear-gradient(135deg,#f7f9fc 50%,#1F77B2 50%)"></span>Blue (default)<br>
+                    <span class="dot" style="background:linear-gradient(135deg,#EEF1F5 50%,#3e6a8a 50%)"></span>Cool Slate<br>
+                    <span class="dot" style="background:linear-gradient(135deg,#f7f9fc 50%,#2E8B57 50%)"></span>Green<br>
+                    <span class="dot" style="background:linear-gradient(135deg,#e9e0cf 50%,#5e7d7a 50%)"></span>Sand<br>
+                    <span class="dot" style="background:linear-gradient(135deg,#FAF7F0 50%,#8a5a3b 50%)"></span>Warm Paper
+                </td>
+                <td>
+                    <span class="dot" style="background:linear-gradient(135deg,#15191f 50%,#1B5E8C 50%)"></span>Dark<br>
+                    <span class="dot" style="background:linear-gradient(135deg,#0d1321 50%,#2a5d7c 50%)"></span>Midnight
+                </td>
+                <td>
+                    <span class="dot" style="background:linear-gradient(135deg,#fdf0f3 50%,#d6336c 50%)"></span>Valentine's Day<br>
+                    <span class="dot" style="background:linear-gradient(135deg,#f3f0fa 50%,#9775c9 50%)"></span>Easter<br>
+                    <span class="dot" style="background:linear-gradient(135deg,#f1f4fa 50%,#b22234 50%)"></span>Fourth of July<br>
+                    <span class="dot" style="background:linear-gradient(135deg,#120d14 50%,#c2560b 50%)"></span>Halloween (dark)<br>
+                    <span class="dot" style="background:linear-gradient(135deg,#f5ead9 50%,#b5541c 50%)"></span>Thanksgiving<br>
+                    <span class="dot" style="background:linear-gradient(135deg,#f6f3ee 50%,#1d6b3a 50%)"></span>Christmas
+                </td>
+            </tr>
+        </table>
+
+        <h2 id="icons">Icon style</h2>
+        <p>Controls the icon beside each category name:</p>
+        <ul>
+            <li><b>Colorful</b>: a two-tone icon on a white chip, tinted with the category's color.</li>
+            <li><b>Simple</b>: a plain white icon.</li>
+            <li><b>Emoji</b>: the emoji you gave the category instead of an icon.</li>
+            <li><b>None</b>: names only.</li>
+        </ul>
+        <p>Each category's icon, emoji and color are set when you <a href="use.html#categories">edit the category</a>.</p>
+
+        <h2 id="fonts">Fonts</h2>
+        <p>
+            There are two dropdowns, and each option is shown in its own typeface so you can preview it
+            (in Firefox; other browsers show the chosen font once you pick it).
+        </p>
+        <ul>
+            <li><b>Heading font</b> is used for the page title and category names (table headers on the Acronyms page).
+                It includes playful display fonts such as Bebas Neue, Permanent Marker, Creepster and Mountains of Christmas.</li>
+            <li><b>Body font</b> is used for everything else. Display fonts are left out of this list because they're hard to read
+                in long text.</li>
+        </ul>
+        <p>Tip: the holiday themes pair well with a matching heading font, like Halloween with Creepster or Christmas with Mountains of Christmas.</p>
+
+        <h2 id="display">Display options</h2>
+        <table>
+            <tr><th>Setting</th><th>What it does</th></tr>
+            <tr><td>Bookmark descriptions</td><td><b>Inline</b> puts the description beside the link name, <b>Below the name</b> gives it its own line, <b>None</b> hides descriptions for a compact list.</td></tr>
+            <tr><td>Show site favicons</td><td>Shows each site's little logo next to its link. Off by default because the favicons come from Google's favicon service, which means each bookmark's domain is sent to Google.</td></tr>
+        </table>
+
+        <h2 id="header">Header</h2>
+        <table>
+            <tr><th>Setting</th><th>What it does</th></tr>
+            <tr><td>Show title</td><td>Shows or hides the big greeting at the top of the page.</td></tr>
+            <tr><td>Show date &amp; time</td><td>Shows or hides the clock line under the title.</td></tr>
+            <tr><td>Header text</td><td>The greeting itself (starts as "Hi how are you?"). It's also the name shown on the browser tab.</td></tr>
+            <tr><td>Date &amp; time format</td><td>How the clock line is written. Leave it blank to hide it. A live preview appears under the box.</td></tr>
+        </table>
+        <p>The format uses short codes. The most useful ones:</p>
+        <table>
+            <tr><th>Code</th><th>Gives</th><th>Code</th><th>Gives</th></tr>
+            <tr><td><code>dddd</code> / <code>ddd</code></td><td>Monday / Mon</td><td><code>h</code> / <code>hh</code> / <code>HH</code></td><td>2 / 02 / 14 (hour)</td></tr>
+            <tr><td><code>MMMM</code> / <code>MMM</code> / <code>M</code></td><td>November / Nov / 11</td><td><code>mm</code></td><td>05 (minutes)</td></tr>
+            <tr><td><code>D</code> / <code>DD</code></td><td>9 / 09 (day)</td><td><code>A</code> / <code>a</code></td><td>PM / pm</td></tr>
+            <tr><td><code>YYYY</code> / <code>YY</code></td><td>2026 / 26</td><td><code>ss</code></td><td>09 (seconds)</td></tr>
+        </table>
+        <p>
+            Put ordinary words in square brackets so they aren't read as codes. Examples:
+        </p>
+        <ul>
+            <li><code>dddd, MMMM D, YYYY h:mm A</code> → Thursday, November 19, 2026 6:20 PM (the default)</li>
+            <li><code>ddd MMM D [at] h:mm a</code> → Thu Nov 19 at 6:20 pm</li>
+            <li><code>YYYY-MM-DD HH:mm</code> → 2026-11-19 18:20</li>
+        </ul>
+
+        <h2 id="undo">Changed your mind?</h2>
+        <p>
+            Just pick different options; nothing is permanent. Your settings are included when you <span class="ui">Export JSON</span>,
+            so restoring a backup brings your look back too.
+        </p>
+        <p>Next: <a href="contribute.html">suggest a change to the site →</a></p>
+    </main>
+
+    <footer class="page-footer">dogearpage · <a href="https://github.com/dogearpage/dogearpage.github.io">Source on GitHub</a></footer>
+
+    <script src="howto.js"></script>
+</body>
+
+</html>
