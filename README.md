@@ -46,6 +46,10 @@ Step-by-step guides live on the site:
 │   ├── contribute.html # Make pull requests
 │   ├── howto.css       # Shared styles for the help pages (theme palettes copied from index.html)
 │   └── howto.js        # Reads the saved theme/fonts so the help pages match (read-only)
+├── assets/
+│   └── OpenMoji-1f516.webp # Favicon (see Credits)
+├── robots.txt          # Lets crawlers in and points them to the sitemap
+├── sitemap.xml         # The site's pages, for search engines
 └── README.md
 ```
 
@@ -104,3 +108,7 @@ Issues and pull requests are welcome. See [Make pull requests](https://dogearpag
 - Keep everything in the browser: no tracking, accounts or servers.
 - Themes and fonts are duplicated in `index.html`, `acronyms.html`, `how-to/howto.css` and `how-to/howto.js`; update them together.
 - Don't break data people have already saved under the storage keys above.
+
+## Credits
+
+The favicon is by [OpenMoji](https://openmoji.org) – the open-source emoji and icon project. License: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).

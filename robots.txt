@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://dogearpage.github.io/sitemap.xml
