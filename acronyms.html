@@ -367,9 +367,6 @@
                     <option value="category">Sort by Category</option>
                     <option value="date">Sort by Date Added</option>
                 </select>
-                <button class="btn btn-secondary" id="exportBtn"><i class="ph ph-download-simple"></i>Export</button>
-                <button class="btn btn-secondary" id="importBtn"><i class="ph ph-upload-simple"></i>Import</button>
-                <input type="file" id="fileInput" accept=".json" style="display:none">
             </div>
         </div>
 
@@ -412,7 +409,18 @@
                 <div class="form-group">
                     <label class="form-label" for="setBodyFont">Body font</label>
                     <select class="form-select" id="setBodyFont"></select>
-                </div>            </div>
+                </div>
+            </div>
+            <!-- Same layout as the Backup section in index.html, so both pages keep backups in Settings -->
+            <div class="settings-section">
+                <div class="settings-section-title">Backup</div>
+                <div class="modal-buttons" style="margin-top:0">
+                    <button class="btn btn-secondary" id="exportBtn"><i class="ph ph-download-simple"></i>Export JSON</button>
+                    <button class="btn btn-secondary" id="importBtn"><i class="ph ph-upload-simple"></i>Import JSON</button>
+                </div>
+                <input type="file" id="fileInput" accept=".json" style="display:none">
+                <div class="form-hint">Acronyms are saved in this browser only. Importing adds new acronyms and skips ones you already have.</div>
+            </div>
             <div class="modal-buttons">
                 <button class="btn btn-secondary" id="closeSettings">Close</button>
             </div>
@@ -797,6 +805,8 @@
          * @returns {void}
          */
         function exportAcronyms() {
+            // The status line sits on the page behind the modal, so close Settings first to make it visible.
+            settingsModal.classList.remove('active');
             if (acronyms.length === 0) { showStatus('No acronyms to export!', 'error'); return; }
             const blob = new Blob([JSON.stringify(acronyms, null, 2)], { type: 'application/json' });
             const a = document.createElement('a');
@@ -819,6 +829,8 @@
         function importAcronyms(file) {
             const reader = new FileReader();
             reader.onload = e => {
+                // Close Settings so the success/error status (shown on the page behind it) is visible.
+                settingsModal.classList.remove('active');
                 try {
                     const imported = JSON.parse(e.target.result);
                     if (!Array.isArray(imported)) throw new Error('Invalid format');
