@@ -247,6 +247,50 @@
         /* Highlights Edit while edit mode is on, so it's clear how to leave it */
         .footer-link.active { color: var(--accent); font-weight: bold; }
 
+        /* ---------- Welcome note (first visit only) ---------- */
+        /* Under the modals (1000) so a modal opened later would still stack on top */
+        .welcome { position: fixed; inset: 0; z-index: 900; background: rgba(0, 0, 0, 0.5); }
+        .welcome[hidden] { display: none; }
+
+        .welcome-card {
+            /* left/top are set by positionWelcome() so the card sits just above Edit */
+            position: fixed;
+            width: calc(100% - 24px);
+            max-width: 360px;
+            background: var(--surface);
+            color: var(--text);
+            padding: 22px;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+        }
+
+        .welcome-card .modal-header { margin-bottom: 10px; }
+        .welcome-text { margin: 0; line-height: 1.5; font-size: 15px; }
+        .welcome-card .modal-buttons { justify-content: flex-end; margin-top: 16px; }
+        .welcome-card .btn { flex: 0 0 auto; padding: 10px 22px; }
+
+        /* Full-screen layer for the arrow; pointer-events off so clicks reach the backdrop */
+        .welcome-arrow { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+        /* Fixed red on every theme so it reads as "look here", not as part of the theme */
+        .welcome-arrow path { fill: none; stroke: #E03131; stroke-width: 3; stroke-linecap: round; }
+        .welcome-arrow marker path { fill: #E03131; stroke: none; }
+
+        /*
+         * Lift Edit above the dimmed backdrop (z-index needs a position) and light it up so it's
+         * the one bright target. Negative margins cancel the padding so the footer doesn't shift.
+         */
+        body.welcoming #editToggle {
+            position: relative;
+            z-index: 901;
+            background: var(--surface);
+            color: var(--accent);
+            font-weight: bold;
+            padding: 6px 12px;
+            margin: -6px -12px;
+            border-radius: 6px;
+            box-shadow: 0 0 0 3px #E03131;
+        }
+
         /* ---------- Container ---------- */
         .container {
             background-color: var(--surface);
@@ -632,6 +676,23 @@
         <p class="footer-note">All data is stored locally in your browser. · <a href="https://github.com/dogearpage/dogearpage.github.io/blob/main/LICENSE"><i class="ph ph-scales"></i> License</a> · <a href="https://github.com/dogearpage/dogearpage.github.io"><i class="ph ph-github-logo"></i> Source</a></p>
     </footer>
 
+    <!-- First-visit welcome note: dims the page and points a red arrow at Edit (see openWelcome) -->
+    <div class="welcome" id="welcome" hidden>
+        <div class="welcome-card" id="welcomeCard" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
+            <div class="modal-header" id="welcomeTitle">This page is yours ✨</div>
+            <p class="welcome-text">These links are a starter set. Click <strong>Edit</strong> to add your own, or <strong>Settings</strong> to change the look. Everything stays in this browser.</p>
+            <div class="modal-buttons"><button class="btn btn-primary" id="welcomeOk" data-action="close-welcome">Got it</button></div>
+        </div>
+        <svg class="welcome-arrow" aria-hidden="true">
+            <defs>
+                <marker id="welcomeArrowHead" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+                    <path d="M 0 0 L 10 5 L 0 10 z"></path>
+                </marker>
+            </defs>
+            <path id="welcomeArrowPath" marker-end="url(#welcomeArrowHead)"></path>
+        </svg>
+    </div>
+
     <!-- Bookmark modal: shared by "add" and "edit" so the form only exists once -->
     <div class="modal" id="bookmarkModal">
         <div class="modal-content">
@@ -774,7 +835,7 @@
             <div class="settings-section">
                 <div class="settings-section-title">Reset</div>
                 <button class="btn btn-danger" style="width:100%" data-action="reset"><i class="ph ph-arrow-counter-clockwise"></i>Reset to defaults</button>
-                <div class="form-hint">Replaces all bookmarks with the starter set (Email, Social &amp; Shopping).</div>
+                <div class="form-hint">Replaces all bookmarks with the starter set (Email, Social &amp; Quick Copy).</div>
             </div>
             <div class="modal-buttons">
                 <button class="btn btn-secondary" data-action="close-modal" data-modal="settingsModal">Close</button>
@@ -877,11 +938,13 @@
             showTitle: true,
             showTime: true,
             showAcronyms: true,                     // on by default so existing users keep the nav bar; off hides it
-            dateFmt: 'dddd, MMMM D, YYYY h:mm A'    // '' hides the date/time line
+            dateFmt: 'dddd, MMMM D, YYYY h:mm A',   // '' hides the date/time line
+            welcomeSeen: false                      // true once the first-visit welcome note is dismissed
         };
         let editMode = false;              // not persisted: page always opens in clean reading view
         let editTarget = null;             // { ci, ii } for the open modal; ii === null means "add new"
         let drag = null;                   // { ci, ii } of the bookmark currently being dragged
+        let isNewVisitor = false;          // true when this browser had no saved bookmarks at load
 
         /**
          * Deep-copy plain JSON data so DEFAULT_DATA is never mutated by edits.
@@ -900,6 +963,8 @@
         function load() {
             try {
                 const raw = localStorage.getItem(DATA_KEY);
+                // Nothing saved yet means a first visit (or cleared data): they're looking at the starter set
+                isNewVisitor = raw === null;
                 data = raw ? JSON.parse(raw) : clone(DEFAULT_DATA);
             } catch (e) {
                 data = clone(DEFAULT_DATA);
@@ -1309,6 +1374,65 @@
             document.getElementById(id).classList.remove('active');
         }
 
+        /* ============ WELCOME NOTE (first visit only) ============ */
+
+        /**
+         * Show the first-visit welcome note with a red arrow pointing at Edit.
+         * Why: the starter links look like someone else's finished page, and Edit is a quiet
+         * footer link, so new visitors don't realize the page is theirs to change.
+         * @returns {void}
+         */
+        function openWelcome() {
+            document.getElementById('welcome').hidden = false;
+            document.body.classList.add('welcoming'); // lifts Edit above the dimmed backdrop
+            // On short screens the footer can be below the fold; bring Edit into view so the arrow has a target.
+            document.getElementById('editToggle').scrollIntoView({ block: 'nearest' });
+            positionWelcome();
+            document.getElementById('welcomeOk').focus();
+        }
+
+        /**
+         * Close the welcome note and remember that, so it never shows again in this browser.
+         * Safe to call when the note isn't open, because Edit calls it on every toggle.
+         * @returns {void}
+         */
+        function closeWelcome() {
+            const welcome = document.getElementById('welcome');
+            if (welcome.hidden) return;
+            welcome.hidden = true;
+            document.body.classList.remove('welcoming');
+            settings.welcomeSeen = true;
+            save();
+        }
+
+        /**
+         * Place the card just above Edit and draw the arrow from the card down onto Edit.
+         * Measured from Edit's live position rather than hard-coded, because the footer moves
+         * with page height, wrapping on phones, web fonts loading in, and scrolling.
+         * @returns {void}
+         */
+        function positionWelcome() {
+            if (document.getElementById('welcome').hidden) return;
+            const edit = document.getElementById('editToggle').getBoundingClientRect();
+            const card = document.getElementById('welcomeCard');
+            const margin = 12;  // keep the card off the window edges
+            const gap = 70;     // room between card and Edit for the arrow to curve through
+            // Start the card a little left of Edit, but keep it fully on screen in narrow windows
+            const left = Math.max(margin, Math.min(edit.left - 20, window.innerWidth - card.offsetWidth - margin));
+            const top = Math.max(margin, edit.top - gap - card.offsetHeight);
+            card.style.left = left + 'px';
+            card.style.top = top + 'px';
+
+            // From under the card (to the right of Edit) down to just above Edit's center.
+            // Both control points are vertical so the arrow leaves the card and lands on Edit pointing down.
+            const sx = left + Math.min(120, card.offsetWidth - 30);
+            const sy = top + card.offsetHeight + 8;
+            const ex = edit.left + edit.width / 2;
+            const ey = edit.top - 10;
+            document.getElementById('welcomeArrowPath')
+                .setAttribute('d', `M ${sx} ${sy} C ${sx} ${sy + 35}, ${ex} ${ey - 35}, ${ex} ${ey}`);
+        }
+
         /**
          * Open the bookmark modal for adding (ii === null) or editing an existing bookmark.
          * @param {number} ci - Category index the bookmark belongs to / is added to.
@@ -1554,7 +1678,9 @@
                 case 'save-copy': saveCopyRow(); break;
                 case 'save-cat': saveCategory(); break;
                 case 'close-modal': closeModal(el.dataset.modal); break;
-                case 'toggle-edit': editMode = !editMode; render(); break;
+                // Clicking the highlighted Edit also dismisses the welcome note, since that's what it pointed at
+                case 'toggle-edit': closeWelcome(); editMode = !editMode; render(); break;
+                case 'close-welcome': closeWelcome(); break;
                 case 'set-theme':
                     settings.theme = el.dataset.theme;
                     applyTheme(); save();
@@ -1586,6 +1712,18 @@
         document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e => {
             if (e.target === m) closeModal(m.id);
         }));
+
+        // Welcome note closes like a modal: backdrop click or Esc. Neither is reachable when it's hidden.
+        document.getElementById('welcome').addEventListener('click', e => {
+            if (e.target.id === 'welcome') closeWelcome();
+        });
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') closeWelcome();
+        });
+        // Re-aim the arrow whenever Edit can move: window size, scrolling, and late-loading fonts/icons
+        window.addEventListener('resize', positionWelcome);
+        window.addEventListener('scroll', positionWelcome);
+        window.addEventListener('load', positionWelcome);
 
         document.getElementById('importFile').addEventListener('change', e => {
             if (e.target.files[0]) importAll(e.target.files[0]);
@@ -1720,6 +1858,7 @@
         applyHeader();
         applyNav();
         render();
+        if (isNewVisitor && !settings.welcomeSeen) openWelcome();
         setInterval(applyHeader, 1000); // keep the clock (and seconds, if used) current
     </script>
 </body>
