@@ -181,6 +181,8 @@
             width: fit-content;
             padding: 10px 20px;
         }
+        /* display:flex above would otherwise beat the [hidden] attribute set by applyNav() */
+        .nav-header[hidden] { display: none; }
 
         .nav-link {
             color: white;
@@ -605,7 +607,7 @@
 </head>
 
 <body>
-    <div class="nav-header">
+    <div class="nav-header" id="navHeader">
         <a href="https://dogearpage.github.io/" class="nav-link active">Bookmarks</a>
         <a href="https://dogearpage.github.io/acronyms" class="nav-link">Acronyms</a>
     </div>
@@ -742,6 +744,7 @@
                 <div class="form-group">
                     <label class="checkbox-row"><input type="checkbox" id="setShowTitle"> Show title</label>
                     <label class="checkbox-row"><input type="checkbox" id="setShowTime"> Show date &amp; time</label>
+                    <label class="checkbox-row"><input type="checkbox" id="setShowAcronyms"> Show Acronyms page link</label>
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="setHeader">Header text (also the browser tab title)</label>
@@ -875,6 +878,7 @@
             descLayout: 'inline',                   // 'inline', 'below' or 'none'
             showTitle: true,
             showTime: true,
+            showAcronyms: true,                     // on by default so existing users keep the nav bar; off hides it
             dateFmt: 'dddd, MMMM D, YYYY h:mm A'    // '' hides the date/time line
         };
         let editMode = false;              // not persisted: page always opens in clean reading view
@@ -1221,6 +1225,16 @@
             document.getElementById('datePreview').textContent = settings.dateFmt ? formatDate(settings.dateFmt) : '(hidden)';
         }
 
+        /**
+         * Show or hide the Bookmarks | Acronyms nav bar. Its only job is switching to the Acronyms
+         * page, so when that page is turned off the bar has nothing left to offer.
+         * Acronym data is untouched, and acronyms.html still works if visited directly.
+         * @returns {void}
+         */
+        function applyNav() {
+            document.getElementById('navHeader').hidden = !settings.showAcronyms;
+        }
+
         /* ============ SEARCH (same behavior as bookmarks.html) ============ */
 
         /**
@@ -1555,6 +1569,7 @@
                     document.getElementById('setDescLayout').value = settings.descLayout;
                     document.getElementById('setShowTitle').checked = settings.showTitle;
                     document.getElementById('setShowTime').checked = settings.showTime;
+                    document.getElementById('setShowAcronyms').checked = settings.showAcronyms;
                     document.getElementById('setHeader').value = settings.headerText;
                     document.getElementById('setDateFmt').value = settings.dateFmt;
                     openModal('settingsModal');
@@ -1614,6 +1629,10 @@
         document.getElementById('setShowTime').addEventListener('change', e => {
             settings.showTime = e.target.checked;
             save(); applyHeader();
+        });
+        document.getElementById('setShowAcronyms').addEventListener('change', e => {
+            settings.showAcronyms = e.target.checked;
+            save(); applyNav();
         });
 
         // Header settings update live as you type, so the page header doubles as the preview.
@@ -1701,6 +1720,7 @@
         applyFonts();
         applyDescLayout();
         applyHeader();
+        applyNav();
         render();
         setInterval(applyHeader, 1000); // keep the clock (and seconds, if used) current
     </script>
