@@ -44,7 +44,7 @@ const FONT_STACKS = {
 /**
  * Read the saved settings. try/catch because storage can be blocked (e.g. some private modes)
  * or hold corrupt JSON; in either case the page simply keeps the default Blue look.
- * @returns {{theme?: string, headingFont?: string, bodyFont?: string}} Saved settings, or {}.
+ * @returns {{theme?: string, headingFont?: string, bodyFont?: string, showAcronyms?: boolean}} Saved settings, or {}.
  */
 function readSettings() {
     try {
@@ -56,7 +56,7 @@ function readSettings() {
 
 /**
  * Apply the saved theme class and font variables to <body>, mirroring applyTheme()/applyFonts()
- * in index.html.
+ * in index.html, and hide the nav bar when the Acronyms page is turned off (mirrors applyNav()).
  * @returns {void}
  */
 function applySavedLook() {
@@ -64,6 +64,9 @@ function applySavedLook() {
     if (THEME_IDS.includes(settings.theme)) document.body.classList.add('theme-' + settings.theme);
     if (FONT_STACKS[settings.headingFont]) document.body.style.setProperty('--heading-font', FONT_STACKS[settings.headingFont]);
     if (FONT_STACKS[settings.bodyFont]) document.body.style.setProperty('--body-font', FONT_STACKS[settings.bodyFont]);
+    // Explicit false check: settings saved before this option existed have no field and mean "on".
+    const nav = document.querySelector('.nav-header');
+    if (nav && settings.showAcronyms === false) nav.hidden = true;
 }
 
 applySavedLook();
