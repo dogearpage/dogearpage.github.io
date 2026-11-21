@@ -624,6 +624,9 @@
             .categories-container { grid-template-columns: 1fr; }
             .search-input { width: 100%; }
             .nav-header { flex-wrap: wrap; }
+            /* Phones: stack the links above the note and center both, so the note isn't squeezed into a thin column */
+            .page-footer { flex-direction: column; text-align: center; }
+            .footer-actions { justify-content: center; flex-wrap: wrap; }
         }
     </style>
 </head>
