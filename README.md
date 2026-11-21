@@ -15,7 +15,7 @@ A personal start page you can make your own, right in the browser. Keep your fav
 ### Features
 
 - **Two kinds of categories:** *Links* (bookmarks with optional descriptions, which can contain `[label](https://url)` links) and *Quick Copy* (label/value rows with a copy button).
-- **13 themes:** Blue, Cool Slate, Green, Sand, Warm Paper, Dark, Midnight, and seasonal Valentine's Day, Easter, Fourth of July, Halloween, Thanksgiving and Christmas.
+- **12 themes:** Blue, Cool Slate, Green, Sand, Warm Paper, Midnight, and seasonal Valentine's Day, Easter, Fourth of July, Halloween, Thanksgiving and Christmas.
 - **19 fonts**, chosen separately for headings and body text.
 - **Icon styles:** colorful duotone [Phosphor](https://phosphoricons.com) icons, simple icons, emoji, or none.
 - **Header options:** your own greeting (also used as the tab title) and a date/time line with a customizable format.
