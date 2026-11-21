@@ -12,7 +12,7 @@ const SETTINGS_KEY = 'nm_settings';
  * Theme ids that have a body.theme-<id> block in howto.css. Blue is the :root default, so it needs
  * no class and isn't listed. Keep in sync with THEMES in index.html.
  */
-const THEME_IDS = ['slate', 'green', 'sand', 'paper', 'dark', 'midnight', 'valentine', 'easter',
+const THEME_IDS = ['slate', 'green', 'sand', 'paper', 'midnight', 'valentine', 'easter',
     'july4', 'halloween', 'thanksgiving', 'christmas'];
 
 /*

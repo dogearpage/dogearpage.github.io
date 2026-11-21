@@ -39,29 +39,7 @@ body.theme-green {
     --copy-hover: #e6f4ec;
 }
 
-body.theme-dark {
-    --bg: #15191f;
-    --surface: #1f252d;
-    --text: #d8dde3;
-    --heading: #e6ebf0;
-    --muted: #8f9aa5;
-    /* On a dark background "darker" would mean less readable, so keep the original muted tone */
-    --desc: #8f9aa5;
-    /* Muted version of #1F77B2 so the header bars don't glare against the dark surfaces */
-    --accent: #1B5E8C;
-    --accent-hover: #164C72;
-    --border: #2e3640;
-    --input-bg: #262d36;
-    --input-border: #3a434e;
-    --copy-hover: #2a3a4a;
-    --shadow: rgba(0, 0, 0, 0.4);
-    /* Off-white so the chips don't glare against the dark page */
-    --chip-bg: #e9ecef;
-    /* The muted accent is too dark to read as link text on dark surfaces */
-    --link: #5dade2;
-}
-
-/* Midnight: darker, cooler than Dark, with a teal accent */
+/* Midnight: a dark, cool theme with a teal accent */
 body.theme-midnight {
     --bg: #0d1321; --surface: #161e2e; --text: #cdd6e4; --heading: #e2e9f3;
     --muted: #7d8ba1; --desc: #8a97ab; --accent: #2a5d7c; --accent-hover: #234d66;
